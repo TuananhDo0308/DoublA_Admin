@@ -9,7 +9,9 @@ export default function Home() {
 
   // If the user is not logged in, show the SignIn page
   if (!user) {
-    return <SignIn />;
+    return <div style={{ height: "100vh" }}>
+      <SignIn />
+    </div>
   }
   useEffect(() => {
     console.log(user);

@@ -9,7 +9,7 @@ html{
 }
 @layer base {
     body {
-        @apply relative z-1 bg-whiten font-satoshi text-base font-normal text-body h-full w-full;
+        @apply relative z-1 bg-whiten font-satoshi text-base font-normal text-body;
     }
 }
 

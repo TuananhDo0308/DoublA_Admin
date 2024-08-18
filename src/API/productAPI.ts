@@ -18,3 +18,25 @@ export const getCategories = async () => {
     console.log(response.data)
     return response.data;
 };
+
+export const deleteProduct = async (productId:any) => {
+    console.log(productId);
+    const response = await axios.post(`${API_URL}/admin/product/removeProduct`,productId);
+    return response.data;
+};
+
+export const getSupplier = async () => {
+    const response = await axios.post(`${API_URL}/admin/supplier/getSupplier`);
+    console.log("ok:",response.data)
+    return response.data;
+};
+
+export const updateProduct = async (product: FormData) => {
+    console.log(product);
+    const response = await axios.post(`${API_URL}/admin/product/updateProduct`, product, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};

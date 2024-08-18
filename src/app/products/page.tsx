@@ -8,20 +8,30 @@ import { IMG_URL } from "@/API/LinkAPI";
 import ProductSection from "@/app/products/productSection/productSection"
 import AddItemForm from "./productSection/addItemSection";
 import CategorySection from "./categorySection/catergorySection";
+import { getSupplier } from "@/API/productAPI";
 const ProductPage = () => {
     const { user } = useAuth();
     const [products, setProducts] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [activeSection, setActiveSection] = useState<string>("products");
-  
+    const [suppliers, setSuppliers]= useState<any[]>([]);
     const addItem = (newProduct: any) => {
       setProducts([...products, newProduct]);
     };
   
     useEffect(() => {
       fetchCategories();
+      fetchProducts();
+      fetchSuppliers();
     }, []);
-  
+    const fetchSuppliers = async () => {
+      try {
+        const data = await getSupplier();
+        setSuppliers(data.listSup);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };  
     // Fetch Categories
     const fetchCategories = async () => {
       try {
@@ -30,27 +40,11 @@ const ProductPage = () => {
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
-    };
-  
-    useEffect(() => {
-      if (categories.length > 0) {
-        fetchProducts();
-      }
-    }, [categories]);
-  
+    };  
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
-        const updatedProducts = data.list.map((product: any) => {
-          const category = categories.find(
-            (cat) => cat.str_malh === product.str_malh
-          );
-          return {
-            ...product,
-            categoryName: category ? category.str_tenlh : "Unknown",
-          };
-        });
-        setProducts(updatedProducts);
+        setProducts(data.list);  
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -76,7 +70,7 @@ const ProductPage = () => {
         {activeSection === "products" && (
           <div>
             <AddItemForm addItem={addItem} categories={categories} /> {/* Pass categories here */}
-            <ProductSection products={products} setProducts={setProducts} categories={categories} />
+            <ProductSection products={products} setProducts={setProducts} categories={categories} suppliers={suppliers} />
           </div>
         )}
         {activeSection === "categories" && <CategorySection categories={categories}  setCategories={setCategories}/>}

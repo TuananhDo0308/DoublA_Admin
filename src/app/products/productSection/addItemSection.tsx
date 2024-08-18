@@ -1,56 +1,61 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useAuth } from "@/context/AuthContext";
-import { getProducts, getCategories, addNewProduct } from "@/API/productAPI";
+import React, { useState } from "react";
+import { addNewProduct } from "@/API/productAPI"; 
+import { IMG_URL } from "@/API/LinkAPI"; 
+import defaultIMG from "@/assets/cog.png"; // Import your default image
 import Image from "next/image";
-import { IMG_URL } from "@/API/LinkAPI";
 
-// Add Item Form Component with Image Preview and Category Combobox
 const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] }) => {
+    // Initialize the product with default values, including the default image URL
     const [newProduct, setNewProduct] = useState({
         str_tensp: '',
         d_don_gia: 0,
         i_so_luong: 0,
-        strimg: '',
-        str_tenlh: ''
+        strimg: null as File | null, // Set as File type
+        str_malh: ''
     });
 
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(defaultIMG.src); // Use default image URL as initial preview
     const [showForm, setShowForm] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-            const formData = new FormData();
-            formData.append('productName', newProduct.str_tensp);
-            formData.append('price', newProduct.d_don_gia.toString());
-            formData.append('quantity', newProduct.i_so_luong.toString());
-            formData.append('categoryName', "Tea");
-            formData.forEach((value, key) => {
-                console.log(key, value);
-            });
+
+        const formData = new FormData();
+        formData.append('productName', newProduct.str_tensp);
+        formData.append('price', newProduct.d_don_gia.toString());
+        formData.append('quantity', newProduct.i_so_luong.toString());
+        formData.append('categoryId', newProduct.str_malh);  // Send category ID instead of name
+        formData.append('supplierId', '1');
+        formData.append('description', "Ok");
+
+
+        // If a file was selected, append it, otherwise don't append any file data
+        if (newProduct.strimg) {
+            formData.append('profilePicture', newProduct.strimg); // Append image file if selected
+        }
 
         try {
-            await addNewProduct(formData);  
-
-            addItem(newProduct);  // Call addItem function passed from the parent
-            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: '', str_tenlh: '' });  // Clear form
-            setImagePreview(null);  // Clear image preview
+            const response = await addNewProduct(formData);
+            console.log(response.newProduct);
+            addItem(response.newProduct);
+            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: null, str_malh: '' });
+            setImagePreview(defaultIMG.src); // Reset to default image
             setShowForm(false);  // Hide form after submission
         } catch (error) {
             console.error("Failed to add item:", error);
             alert("Failed to add item. Please try again.");
         }
-        
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setNewProduct({ ...newProduct, strimg: file.name });
+            setNewProduct({ ...newProduct, strimg: file }); // Store the File object
+
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImagePreview(reader.result as string);
+                setImagePreview(reader.result as string); // Preview the image
             };
             reader.readAsDataURL(file);
         }
@@ -58,8 +63,8 @@ const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] 
 
     return (
         <>
-            <button 
-                onClick={() => setShowForm(!showForm)} 
+            <button
+                onClick={() => setShowForm(!showForm)}
                 className="fixed top-22 right-4 p-3 bg-blue-500 text-white rounded-full"
             >
                 +
@@ -67,57 +72,65 @@ const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] 
             {showForm && (
                 <form onSubmit={handleSubmit} className="border p-4 shadow-md mb-4">
                     <h2 className="font-bold">Add New Product</h2>
+
                     <label>Product Name: </label>
                     <input
                         type="text"
                         value={newProduct.str_tensp}
+                        placeholder="Enter product name"
                         onChange={(e) => setNewProduct({ ...newProduct, str_tensp: e.target.value })}
                         className="border p-2 rounded"
                         required
                     />
                     <br />
+
                     <label>Price: </label>
                     <input
                         type="number"
                         value={newProduct.d_don_gia}
+                        placeholder="Enter price"
                         onChange={(e) => setNewProduct({ ...newProduct, d_don_gia: +e.target.value })}
                         className="border p-2 rounded"
                         required
                     />
                     <br />
+
                     <label>Quantity: </label>
                     <input
                         type="number"
                         value={newProduct.i_so_luong}
+                        placeholder="Enter quantity"
                         onChange={(e) => setNewProduct({ ...newProduct, i_so_luong: +e.target.value })}
                         className="border p-2 rounded"
                         required
                     />
                     <br />
+
                     <label>Image: </label>
                     <input
                         type="file"
                         onChange={handleImageChange}
                         className="border p-2 rounded"
-                        required
                     />
-                    {imagePreview && <img src={imagePreview} alt="Preview" className="mt-4" width={200} />}
+                    {imagePreview && <Image src={imagePreview} alt="Preview" className="mt-4" width={200} height={200} />}
                     <br />
+
                     <label>Category: </label>
                     <select
-                        value={newProduct.str_tenlh}
-                        onChange={(e) => setNewProduct({ ...newProduct, str_tenlh: e.target.value })}
+                        value={newProduct.str_malh}
+                        onChange={(e) => setNewProduct({ ...newProduct, str_malh: e.target.value })} 
                         className="border p-2 rounded"
                         required
                     >
                         <option value="">Select Category</option>
                         {categories.map((category) => (
-                            <option key={category.str_malh} value={category.str_tenlh}>
+                            <option key={category.str_malh} value={category.str_malh}>
                                 {category.str_tenlh}
                             </option>
                         ))}
                     </select>
                     <br />
+
                     <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">Add Product</button>
                 </form>
             )}

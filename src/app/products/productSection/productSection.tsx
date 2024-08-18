@@ -1,126 +1,215 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useAuth } from "@/context/AuthContext";
-import { getProducts, getCategories } from "@/API/productAPI";
+import React, { useState } from "react";
 import Image from "next/image";
 import { IMG_URL } from "@/API/LinkAPI";
+import { deleteProduct } from "@/API/productAPI";
+import MoreVertIcon from '@mui/icons-material/MoreVert';  // Material-UI Icons
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import InfoIcon from '@mui/icons-material/Info';
+import DetailProduct from './detailProduct';
+import { updateProduct } from "@/API/productAPI";
 
-// Product Section Component with Editable Inputs including Category Combobox
-const ProductSection = ({ products, setProducts, categories }: { products: any[], setProducts: any, categories: any[] }) => {
-
+const ProductTable = ({ products, setProducts, categories, suppliers }: { products: any[], setProducts: any, categories: any[], suppliers: any[] }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showActions, setShowActions] = useState<number | null>(null);  // Tracks which row's action menu is open
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
-  const handleInputChange = (index: number, field: string, value: any) => {
-    const updatedProducts = [...products];
-    updatedProducts[index] = {
-      ...updatedProducts[index],
-      [field]: value,
-    };
-    setProducts(updatedProducts);
+  const handleOpenDetail = (product: any) => {
+    setSelectedProduct(product);
+    setEditingIndex(null);  // Exit edit mode
+    console.log(products);
+    setShowActions(null);
   };
 
-  const handleSave = (index: number) => {
-    // Here you could also send updated data to the server
-    setEditingIndex(null); // End editing mode
-  };
-
+  //____________________________________ EDIT FUNCTION_______________________________________
   const handleEdit = (index: number) => {
-    setEditingIndex(index); // Start editing mode
+    // Toggle edit mode
+    if (editingIndex === index) {
+      setEditingIndex(null);  // Exit edit mode
+    } else {
+      setEditingIndex(index); 
+    }
   };
 
-  const handleDelete = (index: number) => {
-    const updatedProducts = products.filter((_, i) => i !== index);
-    setProducts(updatedProducts); // Delete the product from the list
+  //____________________________________ DELETE FUNCTION_______________________________________
+
+  const handleDelete = async (index: number, productId: string) => {
+    setEditingIndex(null);
+    try {
+      await deleteProduct({ productId });
+      const updatedProducts = products.filter(product => product.str_masp !== productId);
+      setProducts(updatedProducts);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("An error occurred while deleting the product.");
+    }
   };
+
+  //____________________________________ SAVE DETAIL FUNCTION_______________________________________
+  const handleSaveDetail = (updatedProduct: any) => {
+    const updatedProducts = products.map((prod) =>
+      prod.str_masp === updatedProduct.str_masp ? updatedProduct : prod
+    );
+    setProducts(updatedProducts);
+    setSelectedProduct(null); // Close the modal after saving
+  };
+
+  //____________________________________ SORT FUNCTION_______________________________________
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(cat => cat.str_malh === categoryId);
+    return category ? category.str_tenlh : "Unknown";
+  };
+
+  const getSupplierName = (supplierId: string) => {
+    const supplier = suppliers.find(sup => sup.str_mancc === supplierId);
+    return supplier ? supplier.str_tenncc : "Unknown";
+  };
+
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === "all" || product.str_malh === selectedCategory;
+    const matchesSearch = product.str_tensp.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <div>
-      {products.map((product, index) => (
-        <div key={index} className="border p-4 shadow-md mb-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src={`${IMG_URL}/${product.strimg}`}
-              alt={product.str_tensp}
-              width={60}
-              height={50}
-            />
-            <div className="ml-4">
-              {editingIndex === index ? (
-                <input
-                  type="text"
-                  value={product.str_tensp}
-                  onChange={(e) => handleInputChange(index, 'str_tensp', e.target.value)}
-                  className="border p-2 rounded mb-2"
-                />
-              ) : (
-                <h2 className="font-bold">{product.str_tensp}</h2>
-              )}
+    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="px-4 py-6 md:px-6 xl:px-7.5">
+        <h4 className="text-xl font-semibold text-black dark:text-white">Product List</h4>
+      </div>
+      <div className="flex justify-between mb-4 px-4">
+        <input 
+          type="text" 
+          placeholder="Search by product name" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          className="border p-2 rounded w-full sm:w-1/2"
+        />
 
-              {editingIndex === index ? (
-                <div>
-                  <label>Price: </label>
-                  <input
-                    type="number"
-                    value={product.d_don_gia}
-                    onChange={(e) => handleInputChange(index, 'd_don_gia', e.target.value)}
-                    className="border p-2 rounded"
+        <select 
+          value={selectedCategory} 
+          onChange={(e) => setSelectedCategory(e.target.value)} 
+          className="border p-2 rounded ml-4"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((category) => (
+            <option key={category.str_malh} value={category.str_malh}>
+              {category.str_tenlh}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5">
+        <div className="col-span-2 flex items-center">
+          <p className="font-medium">Product Name</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Category</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Supplier</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">Price</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">Quantity</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">Actions</p>
+        </div>
+      </div>
+
+      {filteredProducts.map((product, index) => (
+        <div
+          className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-9 md:px-6 2xl:px-7.5"
+          key={index}
+        >
+          <div className="col-span-2 flex items-center">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="h-12.5 w-15 rounded-md">
+                  <Image
+                    src={`${IMG_URL}/${product.strimg}`}
+                    width={400}
+                    height={600}
+                    objectFit="cover"
+                    alt={product.str_tensp}
                   />
-                  <br />
-
-                  <label>Quantity: </label>
-                  <input
-                    type="number"
-                    value={product.i_so_luong}
-                    onChange={(e) => handleInputChange(index, 'i_so_luong', e.target.value)}
-                    className="border p-2 rounded"
-                  />
-                  <br />
-
-                  <label>Category: </label>
-                  <select
-                    value={product.str_malh}
-                    onChange={(e) => handleInputChange(index, 'str_malh', e.target.value)}
-                    className="border p-2 rounded"
-                  >
-                    {categories.map((category) => (
-                      <option key={category.str_malh} value={category.str_malh}>
-                        {category.str_tenlh}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <>
-                  <p>Price: ${product.d_don_gia}</p>
-                  <p>Quantity: {product.i_so_luong}</p>
-                  <p>Category: {product.categoryName}</p>
-                </>
-              )}
+              </div>
+              <p className="text-sm text-black dark:text-white">
+                {product.str_tensp}
+              </p>
             </div>
           </div>
-          <div>
-            {editingIndex === index ? (
-              <button
-                onClick={() => handleSave(index)}
-                className="p-2 bg-blue-500 text-white rounded"
-              >
-                Save
-              </button>
-            ) : (
-              <button
-                onClick={() => handleEdit(index)}
-                className="p-2 bg-yellow-500 text-white rounded"
-              >
-                Edit
-              </button>
-            )}
-            <button
-              onClick={() => handleDelete(index)}
-              className="p-2 bg-red-500 text-white rounded ml-2"
+
+          <div className="col-span-2 hidden items-center sm:flex">
+            <p className="text-sm text-black dark:text-white">
+              {getCategoryName(product.str_malh)}
+            </p>
+          </div>
+          <div className="col-span-2 hidden items-center sm:flex">
+            <p className="text-sm text-black dark:text-white">
+              {getSupplierName(product.Supplier.str_mancc)} 
+            </p>
+          </div>
+
+          <div className="col-span-1 flex items-center">
+            <p className="text-sm text-black dark:text-white">
+              ${product.d_don_gia}
+            </p>
+          </div>
+
+          <div className="col-span-1 flex items-center">
+            <p className="text-sm text-black dark:text-white">
+              {product.i_so_luong}
+            </p>
+          </div>
+
+          <div className="col-span-1 flex items-center relative">
+            <IconButton
+              aria-label="actions"
+              onClick={() =>
+                setShowActions(showActions === index ? null : index)
+              }
             >
-              Delete
-            </button>
+              <MoreVertIcon />
+            </IconButton>
+
+            {showActions === index && (
+              <div className="absolute top-10 right-0 z-10 p-2 bg-white border shadow-md rounded">
+                <IconButton
+                  aria-label="edit"
+                  className="text-white"
+                  onClick={() => handleEdit(index)}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => handleDelete(index, product.str_masp)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="info"
+                  onClick={() => handleOpenDetail(product)} // Trigger modal on click
+                >
+                  <InfoIcon />
+                </IconButton>
+              </div>
+            )}
+            {selectedProduct && (
+              <DetailProduct 
+                product={selectedProduct} 
+                categories={categories}
+                suppliers={suppliers}
+                onSave={handleSaveDetail} // Pass the save handler
+                onClose={() => setSelectedProduct(null)} 
+              />
+            )}
           </div>
         </div>
       ))}
@@ -128,4 +217,4 @@ const ProductSection = ({ products, setProducts, categories }: { products: any[]
   );
 };
 
-export default ProductSection;
+export default ProductTable;
