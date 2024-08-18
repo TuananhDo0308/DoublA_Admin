@@ -21,6 +21,15 @@ const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('productName', newProduct.str_tensp);
+        formData.append('price', newProduct.d_don_gia.toString());
+        formData.append('quantity', newProduct.i_so_luong.toString());
+        formData.append('categoryName', newProduct.categoryName);
+
+        // await addNewProduct(formData);
+
         addItem(newProduct);  // Call addItem function passed from the parent
         setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: '', categoryName: '' });  // Clear form
         setImagePreview(null);  // Clear image preview
