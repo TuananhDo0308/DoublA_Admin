@@ -5,8 +5,8 @@ export const getProducts = async () => {
     const response = await axios.post(`${API_URL}/product`);
     return response.data;
 };
-export const addNewProduct = async (data: any) => {
-    const response = await axios.post(`${API_URL}/admin/product/addNewProduct`, data, {
+export const addNewProduct = async (itemdata: FormData) => {
+    const response = await axios.post(`${API_URL}/admin/product/addNewProduct`, itemdata, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

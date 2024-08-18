@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useAuth } from "@/context/AuthContext";
-import { getProducts, getCategories } from "@/API/productAPI";
+import { getProducts, getCategories, addNewProduct } from "@/API/productAPI";
 import Image from "next/image";
 import { IMG_URL } from "@/API/LinkAPI";
 
@@ -13,27 +13,35 @@ const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] 
         d_don_gia: 0,
         i_so_luong: 0,
         strimg: '',
-        categoryName: ''
+        str_tenlh: ''
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+            const formData = new FormData();
+            formData.append('productName', newProduct.str_tensp);
+            formData.append('price', newProduct.d_don_gia.toString());
+            formData.append('quantity', newProduct.i_so_luong.toString());
+            formData.append('categoryName', "Tea");
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        const formData = new FormData();
-        formData.append('productName', newProduct.str_tensp);
-        formData.append('price', newProduct.d_don_gia.toString());
-        formData.append('quantity', newProduct.i_so_luong.toString());
-        formData.append('categoryName', newProduct.categoryName);
+        try {
+            await addNewProduct(formData);  
 
-        // await addNewProduct(formData);
-
-        addItem(newProduct);  // Call addItem function passed from the parent
-        setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: '', categoryName: '' });  // Clear form
-        setImagePreview(null);  // Clear image preview
-        setShowForm(false);  // Hide form after submission
+            addItem(newProduct);  // Call addItem function passed from the parent
+            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: '', str_tenlh: '' });  // Clear form
+            setImagePreview(null);  // Clear image preview
+            setShowForm(false);  // Hide form after submission
+        } catch (error) {
+            console.error("Failed to add item:", error);
+            alert("Failed to add item. Please try again.");
+        }
+        
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,8 +105,8 @@ const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] 
                     <br />
                     <label>Category: </label>
                     <select
-                        value={newProduct.categoryName}
-                        onChange={(e) => setNewProduct({ ...newProduct, categoryName: e.target.value })}
+                        value={newProduct.str_tenlh}
+                        onChange={(e) => setNewProduct({ ...newProduct, str_tenlh: e.target.value })}
                         className="border p-2 rounded"
                         required
                     >
