@@ -28,7 +28,10 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
   //____________________________________ EDIT FUNCTION_______________________________________
   const handleEdit = (index: number) => {
     // Toggle edit mode
+    console.log(products)
     if (editingIndex === index) {
+      console.log(products)
+
       setEditingIndex(null);  // Exit edit mode
     } else {
       setEditingIndex(index); 
@@ -152,7 +155,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
           </div>
           <div className="col-span-2 hidden items-center sm:flex">
             <p className="text-sm text-black dark:text-white">
-              {getSupplierName(product.Supplier.str_mancc)} 
+              {getSupplierName(product.str_mancc)} 
             </p>
           </div>
 
