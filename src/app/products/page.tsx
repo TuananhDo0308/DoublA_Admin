@@ -8,6 +8,7 @@ import { IMG_URL } from "@/API/LinkAPI";
 import ProductSection from "@/app/products/productSection/productSection"
 import AddItemForm from "./productSection/addItemSection";
 import CategorySection from "./categorySection/catergorySection";
+import SupplierSection from "./supplierSection/supplierSection";
 import { getSupplier } from "@/API/productAPI";
 const ProductPage = () => {
     const { user } = useAuth();
@@ -60,10 +61,16 @@ const ProductPage = () => {
             Product
           </button>
           <button 
-            className="p-2 bg-green-500 text-white rounded" 
+            className="mr-4 p-2 bg-green-500 text-white rounded" 
             onClick={() => setActiveSection("categories")}
           >
             Category
+          </button>
+          <button 
+            className="p-2 bg-green-500 text-white rounded" 
+            onClick={() => setActiveSection("suppliers")}
+          >
+            Supplier
           </button>
         </div>
   
@@ -74,6 +81,7 @@ const ProductPage = () => {
           </div>
         )}
         {activeSection === "categories" && <CategorySection categories={categories}  setCategories={setCategories}/>}
+        {activeSection === "suppliers" && <SupplierSection suppliers={suppliers}  setSuppliers={setSuppliers}/>}
       </DefaultLayout>
     );
   };
