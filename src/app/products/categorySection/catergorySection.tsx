@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 import IconButton from "@mui/material/IconButton";
 // Category Section Component
 const CategorySection = ({ categories, setCategories }: { categories: any[], setCategories: any }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
+
   const handleOpenDetail = (product: any) => {
     setEditingIndex(null); // Exit edit mode
     setShowActions(null);
@@ -16,6 +18,7 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
   const handleEdit = (index: number, currentName: string) => {
     setEditingIndex(index);
     setNewCategoryName(currentName);
+    setShowActions(null); // Hide action menu when editing starts
   };
 
   const handleSave = (index: number) => {
@@ -52,23 +55,32 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
           ) : (
             <h2 className="font-bold">{category.str_tenlh}</h2>
           )}
-          
-            <div className="relative col-span-1 flex items-center">
-            <IconButton
-              aria-label="actions"
-              onClick={() =>
-                setShowActions(showActions === index ? null : index)
-              }
-            >
-              <MoreVertIcon />
-            </IconButton>
 
-            {showActions === index && (
+          <div className="relative col-span-1 flex items-center">
+            {editingIndex === index ? (
+              <IconButton
+                aria-label="save"
+                onClick={() => handleSave(index)}
+              >
+                <SaveIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="actions"
+                onClick={() =>
+                  setShowActions(showActions === index ? null : index)
+                }
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+
+            {showActions === index && editingIndex !== index && (
               <div className="absolute right-0 top-10 z-10 rounded border bg-white p-2 shadow-md">
                 <IconButton
                   aria-label="edit"
                   className="text-white"
-                  onClick={() => handleEdit} // Trigger modal on click
+                  onClick={() => handleEdit(index, category.str_tenlh)} // Trigger edit on click
                 >
                   <EditIcon />
                 </IconButton>
@@ -80,9 +92,8 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
                 </IconButton>
               </div>
             )}
-            
           </div>
-          </div>
+        </div>
       ))}
       <button
         onClick={handleAddCategory}
@@ -95,4 +106,3 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
 };
 
 export default CategorySection;
-

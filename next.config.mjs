@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
@@ -28,7 +29,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['c8e4-14-241-230-38.ngrok-free.app'], // Thay thế bằng domain ngrok của bạn
+    domains: ['80ef-2405-4802-9030-6240-5ea-82ea-1-fedb.ngrok-free.app'], // Thay thế bằng domain ngrok của bạn
   },
   // ...other config
 };
