@@ -5,7 +5,7 @@ import { IMG_URL } from "@/API/LinkAPI";
 import defaultIMG from "@/assets/cog.png"; // Import your default image
 import Image from "next/image";
 
-const AddItemForm = ({ addItem, categories }: { addItem: any, categories: any[] }) => {
+const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categories: any[], suppliers:any[] }) => {
     // Initialize the product with default values, including the default image URL
     const [newProduct, setNewProduct] = useState({
         str_tensp: '',

@@ -76,7 +76,7 @@ const ProductPage = () => {
   
         {activeSection === "products" && (
           <div>
-            <AddItemForm addItem={addItem} categories={categories} /> {/* Pass categories here */}
+            <AddItemForm addItem={addItem} categories={categories} suppliers={suppliers}/> {/* Pass categories here */}
             <ProductSection products={products} setProducts={setProducts} categories={categories} suppliers={suppliers} />
           </div>
         )}

@@ -186,7 +186,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
                 <IconButton
                   aria-label="edit"
                   className="text-white"
-                  onClick={() => handleEdit(index)}
+                  onClick={() => handleOpenDetail(product)} // Trigger modal on click
                 >
                   <EditIcon />
                 </IconButton>
@@ -195,12 +195,6 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
                   onClick={() => handleDelete(index, product.str_masp)}
                 >
                   <DeleteIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="info"
-                  onClick={() => handleOpenDetail(product)} // Trigger modal on click
-                >
-                  <InfoIcon />
                 </IconButton>
               </div>
             )}
