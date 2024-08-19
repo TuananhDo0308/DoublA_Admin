@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { addNewCategories, updateCategories } from "@/API/productAPI";
 
 // Category Section Component
 const CategorySection = ({ categories, setCategories }: { categories: any[], setCategories: any }) => {
@@ -10,9 +11,31 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
     setNewCategoryName(currentName);
   };
 
-  const handleSave = (index: number) => {
+  const handleSave = async (index: number) => {
     const updatedCategories = [...categories];
     updatedCategories[index].str_tenlh = newCategoryName;
+    const category = updatedCategories[index];
+    if (category.str_malh != null) {
+      // Nếu có ID, gọi API để cập nhật
+      try {
+          console.log("Id Cate update: ", category.str_malh)
+          await updateCategories(category.str_malh, newCategoryName);
+          console.log("Category updated successfully");
+      } catch (error) {
+          console.error("Failed to update category", error);
+      }
+    } else {
+        // Nếu không có ID, gọi API để thêm mới
+        try {
+            const response = await addNewCategories(newCategoryName);
+            // Giả sử API trả về ID mới cho loại hàng, bạn có thể cập nhật lại mảng categories
+            updatedCategories[index].str_malh = response.data.str_malh;
+            updatedCategories[index].str_tenlh = response.data.str_tenlh;
+            console.log("Category added successfully");
+        } catch (error) {
+            console.error("Failed to add new category", error);
+        }
+    }
     setCategories(updatedCategories);
     setEditingIndex(null);
   };
@@ -23,11 +46,13 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
   };
 
   const handleAddCategory = () => {
-    const newCategory = {
-      str_malh: `${categories.length + 1}`, // Unique ID
-      str_tenlh: "New Category"
-    };
-    setCategories([...categories, newCategory]);
+    // const newCategory = {
+    //   // str_malh: `${categories.length + 1}`, // Unique ID
+    //   str_tenlh: ""
+    // };
+    // setCategories([...categories, newCategory]);
+    setEditingIndex(categories.length); // Set editingIndex to the new category
+    setNewCategoryName(""); // Clear the input for the new category
   };
 
   return (
@@ -40,6 +65,8 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               className="border p-2 rounded"
+              autoFocus // Automatically focus the input field
+              required
             />
           ) : (
             <h2 className="font-bold">{category.str_tenlh}</h2>
