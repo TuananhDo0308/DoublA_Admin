@@ -38,7 +38,7 @@ export const getCategories = async () => {
     return response.data;
 };
 
-export const addNewCategories = async (name: string) => {
+export const addNewCategory = async (name: string) => {
     const response = await axios.post(`${API_URL}/admin/category/addNewCategory`,{
         name: name
     });
@@ -46,7 +46,7 @@ export const addNewCategories = async (name: string) => {
     return response.data;
 };
 
-export const updateCategories = async (categoryId: string, newName: string) => {
+export const updateCategory = async (categoryId: string, newName: string) => {
     const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
         id: categoryId,
         name: newName,
@@ -55,6 +55,13 @@ export const updateCategories = async (categoryId: string, newName: string) => {
     return response.data;
 };
 
+export const removeCategory = async (categoryId: string) => {
+    const response = await axios.put(`${API_URL}/admin/category/removeCategory`, {
+        id: categoryId,
+    });
+    console.log(response.data);
+    return response.data;
+};
 
 //Supplier
 export const getSupplier = async () => {
@@ -69,5 +76,22 @@ export const addNewSupplier = async (supdata: FormData) => {
             'Content-Type': 'multipart/form-data',
         },
     });
+    return response.data;
+};
+
+// export const updateSupplier = async (supplierId: string, newName: string) => {
+//     const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
+//         id: supplierId,
+//         name: newName,
+//     });
+//     console.log(response.data);
+//     return response.data;
+// };
+
+export const removeSupplier = async (supplierId: string) => {
+    const response = await axios.put(`${API_URL}/admin/supplier/removeSupplier`, {
+        id: supplierId,
+    });
+    console.log(response.data);
     return response.data;
 };

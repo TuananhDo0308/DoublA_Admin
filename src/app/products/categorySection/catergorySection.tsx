@@ -1,14 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import IconButton from "@mui/material/IconButton";
+import { addNewCategory, updateCategory, removeCategory, getCategories } from "@/API/productAPI";
 // Category Section Component
 const CategorySection = ({ categories, setCategories }: { categories: any[], setCategories: any }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
+
+  // useEffect(() => {
+  //   fetchCategories();
+  // }, []);
+  // // Fetch Categories
+  // const fetchCategories = async () => {
+  //   try {
+  //     const data = await getCategories();
+  //     setCategories(data.list);
+  //   } catch (error) {
+  //     console.error("Error fetching categories:", error);
+  //   }
+  // }; 
 
   const handleOpenDetail = (product: any) => {
     setEditingIndex(null); // Exit edit mode
@@ -21,24 +35,63 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
     setShowActions(null); // Hide action menu when editing starts
   };
 
-  const handleSave = (index: number) => {
-    const updatedCategories = [...categories];
-    updatedCategories[index].str_tenlh = newCategoryName;
+  const handleSave = async (index: number) => {
+    let updatedCategories = [...categories];
+    let category = updatedCategories[index];
+
+    if (category.str_malh !== "") {
+        // Nếu có ID, gọi API để cập nhật
+        try {
+            console.log("Id Cate update: ", category.str_malh);
+            await updateCategory(category.str_malh, newCategoryName);
+            alert("Category updated successfully");
+        } catch (error) {
+            console.error("Failed to update category", error);
+        }
+    } else {
+        // Nếu không có ID, gọi API để thêm mới
+        try {
+            const response = await addNewCategory(newCategoryName);
+            
+            // Giả sử API trả về ID mới cho loại hàng, bạn có thể cập nhật lại mảng categories
+            updatedCategories[index] = {
+                ...category,
+                str_malh: response.category.str_malh,
+                str_tenlh: response.category.str_tenlh
+            };
+            alert("Category added successfully");
+        } catch (error) {
+            console.error("Failed to add new category", error);
+        }
+    }
+
     setCategories(updatedCategories);
     setEditingIndex(null);
   };
 
-  const handleDelete = (index: number, str_malh: string) => {
-    const updatedCategories = categories.filter((_, catIndex) => catIndex !== index);
-    setCategories(updatedCategories);
+  const handleDelete = async(index: number, str_malh: string) => {
+    try {
+      
+      await removeCategory(str_malh);
+      alert("Delete Successful!!!")
+
+      // Cập nhật lại danh sách categories sau khi xóa thành công
+      const updatedCategories = categories.filter((_, catIndex) => catIndex !== index);
+      setCategories(updatedCategories);
+    } catch (error) {
+        console.error("Failed to delete category", error);
+    }
   };
 
   const handleAddCategory = () => {
     const newCategory = {
-      str_malh: `${categories.length + 1}`, // Unique ID
-      str_tenlh: "New Category"
+      str_malh: "", // Unique ID
+      str_tenlh: ""
     };
-    setCategories([...categories, newCategory]);
+    const updatedCategories = [...categories, newCategory];
+    setCategories(updatedCategories);
+    setEditingIndex(updatedCategories.length - 1)
+    setNewCategoryName("")
   };
 
   return (
@@ -51,6 +104,8 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               className="border p-2 rounded"
+              autoFocus
+              required
             />
           ) : (
             <h2 className="font-bold">{category.str_tenlh}</h2>

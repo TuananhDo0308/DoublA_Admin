@@ -1,13 +1,21 @@
 import React, { useState } from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import IconButton from "@mui/material/IconButton";
+import { removeSupplier } from "@/API/productAPI";
 
 // supplier Section Component
 const SupplierSection = ({ suppliers, setSuppliers }: { suppliers: any[], setSuppliers: any }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newSupplierName, setNewSupplierName] = useState<string>("");
+  const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
 
   const handleEdit = (index: number, currentName: string) => {
     setEditingIndex(index);
     setNewSupplierName(currentName);
+    setShowActions(null); 
   };
 
   const handleSave = (index: number) => {
@@ -17,17 +25,27 @@ const SupplierSection = ({ suppliers, setSuppliers }: { suppliers: any[], setSup
     setEditingIndex(null);
   };
 
-  const handleDelete = (index: number) => {
-    const updatedSuppliers = suppliers.filter((_, supIndex) => supIndex !== index);
+  const handleDelete = async(index: number, str_mancc: string) => {
+    try {
+      await removeSupplier(str_mancc);
+      alert("Delete Successful!!!")
+
+      const updatedSuppliers = suppliers.filter((_, supIndex) => supIndex !== index);
     setSuppliers(updatedSuppliers);
+    } catch (error) {
+        console.error("Failed to delete supplier", error);
+    }
   };
 
   const handleAddsupplier = () => {
     const newSupplier = {
-      str_mancc: `${suppliers.length + 1}`, // Unique ID
-      str_tenncc: "New supplier"
+      str_mancc: "", // Unique ID
+      str_tenncc: ""
     };
+    const updatedSuppliers = [...suppliers, newSupplier];
     setSuppliers([...suppliers, newSupplier]);
+    setEditingIndex(updatedSuppliers.length - 1)
+    setNewSupplierName("")
   };
 
   return (
@@ -40,32 +58,48 @@ const SupplierSection = ({ suppliers, setSuppliers }: { suppliers: any[], setSup
               value={newSupplierName}
               onChange={(e) => setNewSupplierName(e.target.value)}
               className="border p-2 rounded"
+              autoFocus
+              required
             />
           ) : (
             <h2 className="font-bold">{supplier.str_tenncc}</h2>
           )}
-          <div className="space-x-2">
+          <div className="relative col-span-1 flex items-center">
             {editingIndex === index ? (
-              <button
+              <IconButton
+                aria-label="save"
                 onClick={() => handleSave(index)}
-                className="p-2 bg-blue-500 text-white rounded"
               >
-                Save
-              </button>
+                <SaveIcon />
+              </IconButton>
             ) : (
-              <button
-                onClick={() => handleEdit(index, supplier.str_tenncc)}
-                className="p-2 bg-yellow-500 text-white rounded"
+              <IconButton
+                aria-label="actions"
+                onClick={() =>
+                  setShowActions(showActions === index ? null : index)
+                }
               >
-                Edit
-              </button>
+                <MoreVertIcon />
+              </IconButton>
             )}
-            <button
-              onClick={() => handleDelete(index)}
-              className="p-2 bg-red-500 text-white rounded"
-            >
-              Delete
-            </button>
+
+            {showActions === index && editingIndex !== index && (
+              <div className="absolute right-0 top-10 z-10 rounded border bg-white p-2 shadow-md">
+                <IconButton
+                  aria-label="edit"
+                  className="text-white"
+                  onClick={() => handleEdit(index, supplier.str_tenncc)} // Trigger edit on click
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => handleDelete(index, supplier.str_mancc)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            )}
           </div>
         </div>
       ))}
