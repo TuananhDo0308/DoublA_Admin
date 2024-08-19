@@ -53,22 +53,22 @@ const ProductPage = () => {
   
     return (
       <DefaultLayout>
-        <div className="mb-4">
+        <div className="mb-4 flex gap-3">
           <button 
-            className="mr-4 p-2 bg-blue-500 text-white rounded" 
-            onClick={() => setActiveSection("products")}
+              className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+              onClick={() => setActiveSection("products")}
           >
             Product
           </button>
           <button 
-            className="mr-4 p-2 bg-green-500 text-white rounded" 
-            onClick={() => setActiveSection("categories")}
+              className="inline-flex items-center justify-center rounded-full bg-meta-3 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+              onClick={() => setActiveSection("categories")}
           >
             Category
           </button>
           <button 
-            className="p-2 bg-green-500 text-white rounded" 
-            onClick={() => setActiveSection("suppliers")}
+              className="inline-flex items-center justify-center rounded-full bg-meta-6 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+              onClick={() => setActiveSection("suppliers")}
           >
             Supplier
           </button>

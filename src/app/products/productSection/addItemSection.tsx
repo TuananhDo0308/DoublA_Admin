@@ -12,7 +12,9 @@ const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categori
         d_don_gia: 0,
         i_so_luong: 0,
         strimg: null as File | null, // Set as File type
-        str_malh: ''
+        str_malh: '',
+        str_mancc:'',
+        txt_mo_ta:''
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(defaultIMG.src); // Use default image URL as initial preview
@@ -26,8 +28,8 @@ const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categori
         formData.append('price', newProduct.d_don_gia.toString());
         formData.append('quantity', newProduct.i_so_luong.toString());
         formData.append('categoryId', newProduct.str_malh);  // Send category ID instead of name
-        formData.append('supplierId', '1');
-        formData.append('description', "Ok");
+        formData.append('supplierId', newProduct.str_mancc);
+        formData.append('description', newProduct.txt_mo_ta);
 
 
         // If a file was selected, append it, otherwise don't append any file data
@@ -39,7 +41,7 @@ const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categori
             const response = await addNewProduct(formData);
             console.log(response.newProduct);
             addItem(response.newProduct);
-            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: null, str_malh: '' });
+            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: null, str_malh: '',str_mancc:'' , txt_mo_ta:''});
             setImagePreview(defaultIMG.src); // Reset to default image
             setShowForm(false);  // Hide form after submission
         } catch (error) {
@@ -63,63 +65,72 @@ const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categori
 
     return (
         <>
+        <div
+        className="flex w-full justify-end mb-8"
+        >
             <button
                 onClick={() => setShowForm(!showForm)}
-                className="fixed top-22 right-4 p-3 bg-blue-500 text-white rounded-full"
+                className=" top-30 right-15 p-3 flex w-10 h-10 font-extrabold text-3xl items-center justify-center rounded-full border border-primary text-center  text-primary hover:bg-primary hover:text-white"
             >
                 +
             </button>
+        </div>
+            
             {showForm && (
-                <form onSubmit={handleSubmit} className="border p-4 shadow-md mb-4">
-                    <h2 className="font-bold">Add New Product</h2>
+                <div className="flex justify-center my-4">
+                    
+                <form onSubmit={handleSubmit} className="flex w-full px-13 gap-10 justify-between py-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    
+                    <div className="flex-col h-full justify-between ">
 
-                    <label>Product Name: </label>
+                    <label className="mb-1 mt-3 block text-sm font-medium text-black dark:text-white">Image: </label>
+                    {imagePreview && <Image src={imagePreview} alt="Preview" className="mt-4 mb-4" width={150} height={150} />}
+
+                    <input
+                        type="file"
+                        onChange={handleImageChange}
+                        className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                        />
+                    <label className="mb-1 mt-3 block text-sm font-medium text-black dark:text-white">Product Name: </label>
                     <input
                         type="text"
                         value={newProduct.str_tensp}
                         placeholder="Enter product name"
                         onChange={(e) => setNewProduct({ ...newProduct, str_tensp: e.target.value })}
-                        className="border p-2 rounded"
+                        className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
                         required
                     />
-                    <br />
+                    </div>
+                    
+                    <div className="flex-col">
 
-                    <label>Price: </label>
+                    
+
+                    <label className="mt-4 mb-1 block text-sm font-medium text-black dark:text-white">Price: </label>
                     <input
                         type="number"
                         value={newProduct.d_don_gia}
                         placeholder="Enter price"
                         onChange={(e) => setNewProduct({ ...newProduct, d_don_gia: +e.target.value })}
-                        className="border p-2 rounded"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         required
                     />
-                    <br />
 
-                    <label>Quantity: </label>
+                    <label className="mt-4 mb-1 block text-sm font-medium text-black dark:text-white">Quantity: </label>
                     <input
                         type="number"
                         value={newProduct.i_so_luong}
                         placeholder="Enter quantity"
                         onChange={(e) => setNewProduct({ ...newProduct, i_so_luong: +e.target.value })}
-                        className="border p-2 rounded"
+                        className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
                         required
                     />
-                    <br />
-
-                    <label>Image: </label>
-                    <input
-                        type="file"
-                        onChange={handleImageChange}
-                        className="border p-2 rounded"
-                    />
-                    {imagePreview && <Image src={imagePreview} alt="Preview" className="mt-4" width={200} height={200} />}
-                    <br />
-
-                    <label>Category: </label>
+                    
+                    <label className="mt-4 mb-1 block text-sm font-medium text-black dark:text-white">Category: </label>
                     <select
                         value={newProduct.str_malh}
                         onChange={(e) => setNewProduct({ ...newProduct, str_malh: e.target.value })} 
-                        className="border p-2 rounded"
+                        className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
                         required
                     >
                         <option value="">Select Category</option>
@@ -129,10 +140,38 @@ const AddItemForm = ({ addItem, categories,suppliers }: { addItem: any, categori
                             </option>
                         ))}
                     </select>
-                    <br />
+                    <label className="mt-4 mb-1 block text-sm font-medium text-black dark:text-white">Supplier: </label>
+                    <select
+                        value={newProduct.str_mancc}
+                        onChange={(e) => setNewProduct({ ...newProduct, str_mancc: e.target.value })} 
+                        className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        {suppliers.map((supplier) => (
+                            <option key={supplier.str_tenncc} value={supplier.str_mancc}>
+                                {supplier.str_tenncc}
+                            </option>
+                        ))}
+                    </select>
+                    </div>
+                    <div className="flex-col ">
+                        <label className="mt-4 mb-1 block text-sm font-medium text-black dark:text-white">Description: </label>
+                        <textarea
+                        value={newProduct.txt_mo_ta}
+                        rows={6}
+                        placeholder="Describe your product"
+                        onChange={(e) => setNewProduct({ ...newProduct, txt_mo_ta: e.target.value })}
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        ></textarea>
+                        <div className="w-full flex justify-end">
+                            <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">Add Product</button>
+                        </div>
 
-                    <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">Add Product</button>
+                    </div>
+
                 </form>
+                </div>
             )}
         </>
     );
