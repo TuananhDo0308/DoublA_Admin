@@ -38,6 +38,23 @@ export const getCategories = async () => {
     return response.data;
 };
 
+export const addNewCategories = async (name: string) => {
+    const response = await axios.post(`${API_URL}/admin/category/addNewCategory`,{
+        name: name
+    });
+    console.log(response.data)
+    return response.data;
+};
+
+export const updateCategories = async (categoryId: string, newName: string) => {
+    const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
+        id: categoryId,
+        name: newName,
+    });
+    console.log(response.data);
+    return response.data;
+};
+
 
 //Supplier
 export const getSupplier = async () => {
