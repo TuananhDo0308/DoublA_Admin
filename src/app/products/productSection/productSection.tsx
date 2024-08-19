@@ -3,48 +3,52 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { IMG_URL } from "@/API/LinkAPI";
 import { deleteProduct } from "@/API/productAPI";
-import MoreVertIcon from '@mui/icons-material/MoreVert';  // Material-UI Icons
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
-import InfoIcon from '@mui/icons-material/Info';
-import DetailProduct from './detailProduct';
+import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import InfoIcon from "@mui/icons-material/Info";
+import DetailProduct from "./detailProduct";
 import { updateProduct } from "@/API/productAPI";
 
-const ProductTable = ({ products, setProducts, categories, suppliers }: { products: any[], setProducts: any, categories: any[], suppliers: any[] }) => {
+const ProductTable = ({
+  products,
+  setProducts,
+  categories,
+  suppliers,
+}: {
+  products: any[];
+  setProducts: any;
+  categories: any[];
+  suppliers: any[];
+}) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [showActions, setShowActions] = useState<number | null>(null);  // Tracks which row's action menu is open
+  const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   const handleOpenDetail = (product: any) => {
     setSelectedProduct(product);
-    setEditingIndex(null);  // Exit edit mode
+    setEditingIndex(null); // Exit edit mode
     console.log(products);
     setShowActions(null);
   };
 
   //____________________________________ EDIT FUNCTION_______________________________________
-  const handleEdit = (index: number) => {
-    // Toggle edit mode
-    console.log(products)
-    if (editingIndex === index) {
-      console.log(products)
 
-      setEditingIndex(null);  // Exit edit mode
-    } else {
-      setEditingIndex(index); 
-    }
-  };
 
   //____________________________________ DELETE FUNCTION_______________________________________
 
   const handleDelete = async (index: number, productId: string) => {
     setEditingIndex(null);
+        setShowActions(null);
+
     try {
       await deleteProduct({ productId });
-      const updatedProducts = products.filter(product => product.str_masp !== productId);
+      const updatedProducts = products.filter(
+        (product) => product.str_masp !== productId,
+      );
       setProducts(updatedProducts);
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -55,7 +59,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
   //____________________________________ SAVE DETAIL FUNCTION_______________________________________
   const handleSaveDetail = (updatedProduct: any) => {
     const updatedProducts = products.map((prod) =>
-      prod.str_masp === updatedProduct.str_masp ? updatedProduct : prod
+      prod.str_masp === updatedProduct.str_masp ? updatedProduct : prod,
     );
     setProducts(updatedProducts);
     setSelectedProduct(null); // Close the modal after saving
@@ -63,39 +67,44 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
 
   //____________________________________ SORT FUNCTION_______________________________________
   const getCategoryName = (categoryId: string) => {
-    const category = categories.find(cat => cat.str_malh === categoryId);
+    const category = categories.find((cat) => cat.str_malh === categoryId);
     return category ? category.str_tenlh : "Unknown";
   };
 
   const getSupplierName = (supplierId: string) => {
-    const supplier = suppliers.find(sup => sup.str_mancc === supplierId);
+    const supplier = suppliers.find((sup) => sup.str_mancc === supplierId);
     return supplier ? supplier.str_tenncc : "Unknown";
   };
 
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === "all" || product.str_malh === selectedCategory;
-    const matchesSearch = product.str_tensp.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "all" || product.str_malh === selectedCategory;
+    const matchesSearch = product.str_tensp
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="px-4 py-6 md:px-6 xl:px-7.5">
-        <h4 className="text-xl font-semibold text-black dark:text-white">Product List</h4>
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Product List
+        </h4>
       </div>
-      <div className="flex justify-between mb-4 px-4">
-        <input 
-          type="text" 
-          placeholder="Search by product name" 
-          value={searchTerm} 
-          onChange={(e) => setSearchTerm(e.target.value)} 
-          className="border p-2 rounded w-full sm:w-1/2"
+      <div className="mb-4 flex justify-between px-4">
+        <input
+          type="text"
+          placeholder="Search by product name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mx-3 w-[500px] rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
         />
 
-        <select 
-          value={selectedCategory} 
-          onChange={(e) => setSelectedCategory(e.target.value)} 
-          className="border p-2 rounded ml-4"
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className=" mr-4 rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
         >
           <option value="all">All Categories</option>
           {categories.map((category) => (
@@ -134,13 +143,13 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
           <div className="col-span-2 flex items-center">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div className="h-12.5 w-15 rounded-md">
-                  <Image
-                    src={`${IMG_URL}/${product.strimg}`}
-                    width={400}
-                    height={600}
-                    objectFit="cover"
-                    alt={product.str_tensp}
-                  />
+                <Image
+                  src={`${IMG_URL}/${product.strimg}`}
+                  width={400}
+                  height={600}
+                  objectFit="cover"
+                  alt={product.str_tensp}
+                />
               </div>
               <p className="text-sm text-black dark:text-white">
                 {product.str_tensp}
@@ -155,7 +164,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
           </div>
           <div className="col-span-2 hidden items-center sm:flex">
             <p className="text-sm text-black dark:text-white">
-              {getSupplierName(product.str_mancc)} 
+              {getSupplierName(product.str_mancc)}
             </p>
           </div>
 
@@ -171,7 +180,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
             </p>
           </div>
 
-          <div className="col-span-1 flex items-center relative">
+          <div className="relative col-span-1 flex items-center">
             <IconButton
               aria-label="actions"
               onClick={() =>
@@ -182,7 +191,7 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
             </IconButton>
 
             {showActions === index && (
-              <div className="absolute top-10 right-0 z-10 p-2 bg-white border shadow-md rounded">
+              <div className="absolute right-0 top-10 z-10 rounded border bg-white p-2 shadow-md">
                 <IconButton
                   aria-label="edit"
                   className="text-white"
@@ -199,12 +208,12 @@ const ProductTable = ({ products, setProducts, categories, suppliers }: { produc
               </div>
             )}
             {selectedProduct && (
-              <DetailProduct 
-                product={selectedProduct} 
+              <DetailProduct
+                product={selectedProduct}
                 categories={categories}
                 suppliers={suppliers}
                 onSave={handleSaveDetail} // Pass the save handler
-                onClose={() => setSelectedProduct(null)} 
+                onClose={() => setSelectedProduct(null)}
               />
             )}
           </div>

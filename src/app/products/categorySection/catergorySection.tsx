@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 // Category Section Component
 const CategorySection = ({ categories, setCategories }: { categories: any[], setCategories: any }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState<string>("");
+  const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
+  const handleOpenDetail = (product: any) => {
+    setEditingIndex(null); // Exit edit mode
+    setShowActions(null);
+  };
 
   const handleEdit = (index: number, currentName: string) => {
     setEditingIndex(index);
@@ -17,7 +25,7 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
     setEditingIndex(null);
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = (index: number, str_malh: string) => {
     const updatedCategories = categories.filter((_, catIndex) => catIndex !== index);
     setCategories(updatedCategories);
   };
@@ -44,30 +52,37 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
           ) : (
             <h2 className="font-bold">{category.str_tenlh}</h2>
           )}
-          <div className="space-x-2">
-            {editingIndex === index ? (
-              <button
-                onClick={() => handleSave(index)}
-                className="p-2 bg-blue-500 text-white rounded"
-              >
-                Save
-              </button>
-            ) : (
-              <button
-                onClick={() => handleEdit(index, category.str_tenlh)}
-                className="p-2 bg-yellow-500 text-white rounded"
-              >
-                Edit
-              </button>
-            )}
-            <button
-              onClick={() => handleDelete(index)}
-              className="p-2 bg-red-500 text-white rounded"
+          
+            <div className="relative col-span-1 flex items-center">
+            <IconButton
+              aria-label="actions"
+              onClick={() =>
+                setShowActions(showActions === index ? null : index)
+              }
             >
-              Delete
-            </button>
+              <MoreVertIcon />
+            </IconButton>
+
+            {showActions === index && (
+              <div className="absolute right-0 top-10 z-10 rounded border bg-white p-2 shadow-md">
+                <IconButton
+                  aria-label="edit"
+                  className="text-white"
+                  onClick={() => handleEdit} // Trigger modal on click
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => handleDelete(index, category.str_malh)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            )}
+            
           </div>
-        </div>
+          </div>
       ))}
       <button
         onClick={handleAddCategory}
@@ -80,3 +95,4 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
 };
 
 export default CategorySection;
+
