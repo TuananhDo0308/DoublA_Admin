@@ -71,26 +71,28 @@ export const getSupplier = async () => {
     return response.data;
 };
 
-export const addNewSupplier = async (supdata: FormData) => {
-    const response = await axios.post(`${API_URL}/admin/supplier/addNewSupplier`, supdata, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+export const addNewSupplier = async ( name:any, address:any, phoneNumber:any) => {
+    const response = await axios.put(`${API_URL}/admin/supplier/addNewSupplier`, {
+        phoneNumber:phoneNumber,
+        address: address,
+        name: name,
     });
     return response.data;
 };
 
-// export const updateSupplier = async (supplierId: string, newName: string) => {
-//     const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
-//         id: supplierId,
-//         name: newName,
-//     });
-//     console.log(response.data);
-//     return response.data;
-// };
+export const updateSupplier = async (supplierId: string, newName: string, address:any, phoneNumber:any) => {
+    const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
+        id: supplierId,
+        newName: newName,
+        address:address,
+        phoneNumber:phoneNumber,
+    });
+    console.log(response.data);
+    return response.data;
+};
 
 export const removeSupplier = async (supplierId: string) => {
-    const response = await axios.put(`${API_URL}/admin/supplier/removeSupplier`, {
+    const response = await axios.post(`${API_URL}/admin/supplier/removeSupplier`, {
         id: supplierId,
     });
     console.log(response.data);

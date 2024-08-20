@@ -199,7 +199,7 @@ const AddItemForm = ({
             </div>
             <div className="flex-col ">
               <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
-                Description:{" "}
+                Description:
               </label>
               <textarea
                 value={newProduct.txt_mo_ta}

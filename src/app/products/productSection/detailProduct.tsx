@@ -182,7 +182,6 @@ export default function DetailProduct({
               <label className="text-gray-700 mt-2 block text-lg font-bold">
                 Description
               </label>
-              <textarea className="border-gray-300 mt-1 block w-full rounded-md shadow-sm" />
               <textarea
                 {...methods.register("txt_mo_ta")}
                 rows={6}

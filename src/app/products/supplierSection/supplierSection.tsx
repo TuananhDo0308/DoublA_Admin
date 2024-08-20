@@ -2,93 +2,106 @@ import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SaveIcon from "@mui/icons-material/Save";
 import IconButton from "@mui/material/IconButton";
-import { removeSupplier } from "@/API/productAPI";
+import { updateSupplier, removeSupplier } from "@/API/productAPI";
+import DetailSupplier from "./detailSupplier";
 
-// supplier Section Component
-const SupplierSection = ({ suppliers, setSuppliers }: { suppliers: any[], setSuppliers: any }) => {
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newSupplierName, setNewSupplierName] = useState<string>("");
+const SupplierTable = ({
+  suppliers,
+  setSuppliers,
+}: {
+  suppliers: any[];
+  setSuppliers: any;
+}) => {
   const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
+  const [selectedSupplier, setSelectedSupplier] = useState<any | null>(null);
 
-  const handleEdit = (index: number, currentName: string) => {
-    setEditingIndex(index);
-    setNewSupplierName(currentName);
-    setShowActions(null); 
+  const handleOpenDetail = (supplier: any) => {
+    setSelectedSupplier(supplier);
+    setShowActions(null);
   };
 
-  const handleSave = (index: number) => {
-    const updatedSuppliers = [...suppliers];
-    updatedSuppliers[index].str_tenncc = newSupplierName;
-    setSuppliers(updatedSuppliers);
-    setEditingIndex(null);
-  };
-
-  const handleDelete = async(index: number, str_mancc: string) => {
+  const handleDelete = async (index: number, supplierId: string) => {
     try {
-      await removeSupplier(str_mancc);
-      alert("Delete Successful!!!")
-
-      const updatedSuppliers = suppliers.filter((_, supIndex) => supIndex !== index);
-    setSuppliers(updatedSuppliers);
+      await removeSupplier(supplierId );
+      const updatedSuppliers = suppliers.filter(
+        (supplier) => supplier.str_mancc !== supplierId,
+      );
+      setSuppliers(updatedSuppliers);
     } catch (error) {
-        console.error("Failed to delete supplier", error);
+      console.error("Error deleting supplier:", error);
+      alert("An error occurred while deleting the supplier.");
     }
   };
 
-  const handleAddsupplier = () => {
-    const newSupplier = {
-      str_mancc: "", // Unique ID
-      str_tenncc: ""
-    };
-    const updatedSuppliers = [...suppliers, newSupplier];
-    setSuppliers([...suppliers, newSupplier]);
-    setEditingIndex(updatedSuppliers.length - 1)
-    setNewSupplierName("")
+  const handleSaveDetail = (updatedSupplier: any) => {
+    const updatedSuppliers = suppliers.map((sup) =>
+      sup.str_mancc === updatedSupplier.str_mancc ? updatedSupplier : sup,
+    );
+    setSuppliers(updatedSuppliers);
+    setSelectedSupplier(null); // Close the modal after saving
   };
 
   return (
-    <div>
-      {suppliers.map((supplier, index) => (
-        <div key={index} className="border p-4 shadow-md flex items-center justify-between">
-          {editingIndex === index ? (
-            <input
-              type="text"
-              value={newSupplierName}
-              onChange={(e) => setNewSupplierName(e.target.value)}
-              className="border p-2 rounded"
-              autoFocus
-              required
-            />
-          ) : (
-            <h2 className="font-bold">{supplier.str_tenncc}</h2>
-          )}
-          <div className="relative col-span-1 flex items-center">
-            {editingIndex === index ? (
-              <IconButton
-                aria-label="save"
-                onClick={() => handleSave(index)}
-              >
-                <SaveIcon />
-              </IconButton>
-            ) : (
-              <IconButton
-                aria-label="actions"
-                onClick={() =>
-                  setShowActions(showActions === index ? null : index)
-                }
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
+    <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="px-4 py-6 md:px-6 xl:px-7.5">
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Supplier List
+        </h4>
+      </div>
+      <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="col-span-2 flex items-center">
+          <p className="font-medium">Supplier Name</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Phone Number</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Address</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">Actions</p>
+        </div>
+      </div>
 
-            {showActions === index && editingIndex !== index && (
+      {suppliers.map((supplier, index) => (
+        <div
+          className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          key={index}
+        >
+          <div className="col-span-2 flex items-center">
+            <p className="text-sm text-black dark:text-white">
+              {supplier.str_tenncc}
+            </p>
+          </div>
+
+          <div className="col-span-2 hidden items-center sm:flex">
+            <p className="text-sm text-black dark:text-white">
+              {supplier.strsdt}
+            </p>
+          </div>
+          <div className="col-span-2 hidden items-center sm:flex">
+            <p className="text-sm text-black dark:text-white">
+              {supplier.str_dia_chi}
+            </p>
+          </div>
+
+          <div className="relative col-span-1 flex items-center">
+            <IconButton
+              aria-label="actions"
+              onClick={() =>
+                setShowActions(showActions === index ? null : index)
+              }
+            >
+              <MoreVertIcon />
+            </IconButton>
+
+            {showActions === index && (
               <div className="absolute right-0 top-10 z-10 rounded border bg-white p-2 shadow-md">
                 <IconButton
                   aria-label="edit"
                   className="text-white"
-                  onClick={() => handleEdit(index, supplier.str_tenncc)} // Trigger edit on click
+                  onClick={() => handleOpenDetail(supplier)} // Trigger modal on click
                 >
                   <EditIcon />
                 </IconButton>
@@ -100,17 +113,18 @@ const SupplierSection = ({ suppliers, setSuppliers }: { suppliers: any[], setSup
                 </IconButton>
               </div>
             )}
+            {selectedSupplier && (
+              <DetailSupplier
+                supplier={selectedSupplier}
+                onSave={handleSaveDetail} // Pass the save handler
+                onClose={() => setSelectedSupplier(null)}
+              />
+            )}
           </div>
         </div>
       ))}
-      <button
-        onClick={handleAddsupplier}
-        className="mt-4 p-2 bg-green-500 text-white rounded"
-      >
-        Add New supplier
-      </button>
     </div>
   );
 };
 
-export default SupplierSection;
+export default SupplierTable;

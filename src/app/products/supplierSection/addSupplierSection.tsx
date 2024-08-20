@@ -1,141 +1,118 @@
 "use client";
 import React, { useState } from "react";
-import { addNewProduct } from "@/API/productAPI"; 
-import { IMG_URL } from "@/API/LinkAPI"; 
-import defaultIMG from "@/assets/cog.png"; // Import your default image
-import Image from "next/image";
+import { addNewSupplier } from "@/API/productAPI";
 
-const AddSupplierForm = ({ addItem, categories }: { addItem: any, categories: any[] }) => {
-    // Initialize the product with default values, including the default image URL
-    const [newProduct, setNewProduct] = useState({
-        str_tensp: '',
-        d_don_gia: 0,
-        i_so_luong: 0,
-        strimg: null as File | null, // Set as File type
-        str_malh: ''
-    });
+const AddSupplierForm = ({
+  addSupplier,
+}: {
+  addSupplier: any;
+}) => {
+  // Initialize the supplier with default values, including a null image
+  const [newSupplier, setNewSupplier] = useState({
+    str_tenncc: "",
+    strsdt: "",
+    str_dia_chi: "",
+    strimg: null, // Set to null since we are not handling images for suppliers
+  });
 
-    const [imagePreview, setImagePreview] = useState<string | null>(defaultIMG.src); // Use default image URL as initial preview
-    const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('productName', newProduct.str_tensp);
-        formData.append('price', newProduct.d_don_gia.toString());
-        formData.append('quantity', newProduct.i_so_luong.toString());
-        formData.append('categoryId', newProduct.str_malh);  // Send category ID instead of name
-        formData.append('supplierId', '1');
-        formData.append('description', "Ok");
+    try {
+      // Call API to add a new supplier
+      const response = await addNewSupplier(newSupplier.str_tenncc,newSupplier.str_dia_chi,newSupplier.strsdt);
+      console.log(response.newSupplier);
+      addSupplier(response.newSupplier);
+      setNewSupplier({
+        str_tenncc: "",
+        strsdt: "",
+        str_dia_chi: "",
+        strimg: null,
+      });
+      setShowForm(false); // Hide form after submission
+    } catch (error) {
+      console.error("Failed to add supplier:", error);
+      alert("Failed to add supplier. Please try again.");
+    }
+  };
 
+  return (
+    <>
+      <div className="mb-8 flex w-full justify-end">
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className=" right-15 top-30 flex h-10 w-10 items-center justify-center rounded-full border border-primary p-3 text-center text-3xl font-extrabold  text-primary hover:bg-primary hover:text-white"
+        >
+          +
+        </button>
+      </div>
 
-        // If a file was selected, append it, otherwise don't append any file data
-        if (newProduct.strimg) {
-            formData.append('profilePicture', newProduct.strimg); // Append image file if selected
-        }
+      {showForm && (
+        <div className="my-4 flex justify-center">
+          <form
+            onSubmit={handleSubmit}
+            className="flex w-full justify-between gap-10 rounded-sm border border-stroke bg-white px-13 py-10 shadow-default dark:border-strokedark dark:bg-boxdark"
+          >
+            <div className="flex-col">
+              <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
+                Supplier Name:{" "}
+              </label>
+              <input
+                type="text"
+                value={newSupplier.str_tenncc}
+                placeholder="Enter supplier name"
+                onChange={(e) =>
+                  setNewSupplier({ ...newSupplier, str_tenncc: e.target.value })
+                }
+                className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
+                required
+              />
 
-        try {
-            const response = await addNewProduct(formData);
-            console.log(response.newProduct);
-            addItem(response.newProduct);
-            setNewProduct({ str_tensp: '', d_don_gia: 0, i_so_luong: 0, strimg: null, str_malh: '' });
-            setImagePreview(defaultIMG.src); // Reset to default image
-            setShowForm(false);  // Hide form after submission
-        } catch (error) {
-            console.error("Failed to add item:", error);
-            alert("Failed to add item. Please try again.");
-        }
-    };
+              <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
+                Phone Number:{" "}
+              </label>
+              <input
+                type="text"
+                value={newSupplier.strsdt}
+                placeholder="Enter phone number"
+                onChange={(e) =>
+                  setNewSupplier({ ...newSupplier, strsdt: e.target.value })
+                }
+                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                required
+              />
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setNewProduct({ ...newProduct, strimg: file }); // Store the File object
+              <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
+                Address:{" "}
+              </label>
+              <input
+                type="text"
+                value={newSupplier.str_dia_chi}
+                placeholder="Enter address"
+                onChange={(e) =>
+                  setNewSupplier({ ...newSupplier, str_dia_chi: e.target.value })
+                }
+                className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
+                required
+              />
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string); // Preview the image
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    return (
-        <>
-            <button
-                onClick={() => setShowForm(!showForm)}
-                className="fixed top-22 right-4 p-3 bg-blue-500 text-white rounded-full"
-            >
-                +
-            </button>
-            {showForm && (
-                <form onSubmit={handleSubmit} className="border p-4 shadow-md mb-4">
-                    <h2 className="font-bold">Add New Product</h2>
-
-                    <label>Product Name: </label>
-                    <input
-                        type="text"
-                        value={newProduct.str_tensp}
-                        placeholder="Enter product name"
-                        onChange={(e) => setNewProduct({ ...newProduct, str_tensp: e.target.value })}
-                        className="border p-2 rounded"
-                        required
-                    />
-                    <br />
-
-                    <label>Price: </label>
-                    <input
-                        type="number"
-                        value={newProduct.d_don_gia}
-                        placeholder="Enter price"
-                        onChange={(e) => setNewProduct({ ...newProduct, d_don_gia: +e.target.value })}
-                        className="border p-2 rounded"
-                        required
-                    />
-                    <br />
-
-                    <label>Quantity: </label>
-                    <input
-                        type="number"
-                        value={newProduct.i_so_luong}
-                        placeholder="Enter quantity"
-                        onChange={(e) => setNewProduct({ ...newProduct, i_so_luong: +e.target.value })}
-                        className="border p-2 rounded"
-                        required
-                    />
-                    <br />
-
-                    <label>Image: </label>
-                    <input
-                        type="file"
-                        onChange={handleImageChange}
-                        className="border p-2 rounded"
-                    />
-                    {imagePreview && <Image src={imagePreview} alt="Preview" className="mt-4" width={200} height={200} />}
-                    <br />
-
-                    <label>Category: </label>
-                    <select
-                        value={newProduct.str_malh}
-                        onChange={(e) => setNewProduct({ ...newProduct, str_malh: e.target.value })} 
-                        className="border p-2 rounded"
-                        required
-                    >
-                        <option value="">Select Category</option>
-                        {categories.map((category) => (
-                            <option key={category.str_malh} value={category.str_malh}>
-                                {category.str_tenlh}
-                            </option>
-                        ))}
-                    </select>
-                    <br />
-
-                    <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded">Add Product</button>
-                </form>
-            )}
-        </>
-    );
+              <div className="flex w-full justify-end">
+                <button
+                  type="submit"
+                  className="mt-4 rounded bg-blue-500 p-2 text-white"
+                >
+                  Add Supplier
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default AddSupplierForm;
+ 
