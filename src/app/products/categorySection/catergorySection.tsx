@@ -11,18 +11,7 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
   const [newCategoryName, setNewCategoryName] = useState<string>("");
   const [showActions, setShowActions] = useState<number | null>(null); // Tracks which row's action menu is open
 
-  // useEffect(() => {
-  //   fetchCategories();
-  // }, []);
-  // // Fetch Categories
-  // const fetchCategories = async () => {
-  //   try {
-  //     const data = await getCategories();
-  //     setCategories(data.list);
-  //   } catch (error) {
-  //     console.error("Error fetching categories:", error);
-  //   }
-  // }; 
+
 
   const handleOpenDetail = (product: any) => {
     setEditingIndex(null); // Exit edit mode
@@ -40,11 +29,9 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
     let category = updatedCategories[index];
 
     if (category.str_malh !== "") {
-        // Nếu có ID, gọi API để cập nhật
         try {
             console.log("Id Cate update: ", category.str_malh);
             await updateCategory(category.str_malh, newCategoryName);
-            alert("Category updated successfully");
         } catch (error) {
             console.error("Failed to update category", error);
         }
@@ -95,9 +82,17 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
   };
 
   return (
-    <div>
+    <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+       <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+        Categories list
+      </h4>
+      <div className="flex p-4 justify-between mb-4 rounded-sm bg-gray-2 dark:bg-meta-4">
+
+            <h1 className="text-sm font-medium uppercase xsm:text-base">Category name</h1>
+            <h1 className="text-sm font-medium uppercase xsm:text-base">Actions</h1>
+            </div>
       {categories.map((category, index) => (
-        <div key={index} className="border p-4 shadow-md flex items-center justify-between">
+        <div key={index} className="border-b px-4 mt-5 flex justify-between border-stroke dark:border-strokedark">
           {editingIndex === index ? (
             <input
               type="text"
@@ -110,7 +105,7 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
           ) : (
             <h2 className="font-bold">{category.str_tenlh}</h2>
           )}
-
+          
           <div className="relative col-span-1 flex items-center">
             {editingIndex === index ? (
               <IconButton
@@ -150,12 +145,16 @@ const CategorySection = ({ categories, setCategories }: { categories: any[], set
           </div>
         </div>
       ))}
+      <div className="flex justify-end">
+
       <button
         onClick={handleAddCategory}
-        className="mt-4 p-2 bg-green-500 text-white rounded"
+        className="flex m-4 h-10 w-10 items-center justify-center rounded-full border border-meta-3 p-3 text-center text-3xl font-extrabold  text-meta-3 hover:bg-meta-3 hover:text-white"
       >
-        Add New Category
+       +
       </button>
+      </div>
+
     </div>
   );
 };
