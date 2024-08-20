@@ -25,11 +25,12 @@ const ChartThree: React.FC = () => {
       const response = await getRevenueCategories( year, month );
       const data = response.data;
 
+      const revenueValues = Object.values(data).map((item: any) => item.totalRevenue);
       const percentageValues = Object.values(data).map((item: any) => item.percentage);
       const categoryLabels = Object.values(data).map((item: any) => item.name);
-
-      setSeries(percentageValues);
-      setLabels(categoryLabels);
+      const formattedLabels = categoryLabels.map((label: string, index: number) => `${label}: ${percentageValues[index]}%`);
+      setSeries(revenueValues);
+      setLabels(formattedLabels);
       console.log('Series:', series);
       console.log('Labels:', labels);
       console.log('Total Revenue:', response.totalRevenue);
@@ -201,7 +202,7 @@ const ChartThree: React.FC = () => {
               <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-primary"></span>
               <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
                 <span>{labels[index]}</span>
-                <span>{value}%</span>
+                {/* <span>{value}</span> */}
               </p>
             </div>
           </div>
