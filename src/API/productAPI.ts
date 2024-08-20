@@ -1,5 +1,6 @@
 import axios from 'axios';
 import API_URL from './LinkAPI';
+import { integer } from 'aws-sdk/clients/cloudfront';
 
 //Product
 export const getProducts = async () => {
@@ -91,6 +92,26 @@ export const addNewSupplier = async (supdata: FormData) => {
 export const removeSupplier = async (supplierId: string) => {
     const response = await axios.put(`${API_URL}/admin/supplier/removeSupplier`, {
         id: supplierId,
+    });
+    console.log(response.data);
+    return response.data;
+};
+
+
+export const getRevenueProducts = async (categoryId: string, year: string, month: string) => {
+    const response = await axios.post(`${API_URL}/admin/revenue/getRevenueProducts`, {
+        categoryId: categoryId,
+        year: year,
+        month: month ,
+    });
+    console.log(response.data);
+    return response.data;
+};
+
+export const getRevenueCategories = async (year: string, month: string) => {
+    const response = await axios.post(`${API_URL}/admin/revenue/getRevenueCategories`, {
+        year: year,
+        month: month ,
     });
     console.log(response.data);
     return response.data;
