@@ -8,9 +8,9 @@ export const loginAdmin = async (credentials: any) => {
     return response.data;
 };;
 
-export const updateAdmin = async (product: FormData) => {
-    console.log(product);
-    const response = await axios.post(`${API_URL}/admin/product/updateProduct`, product, {
+export const update = async (admin: FormData) => {
+    console.log(admin);
+    const response = await axios.put(`${API_URL}/users/updateProfile`, admin, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
