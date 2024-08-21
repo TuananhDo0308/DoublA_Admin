@@ -91,7 +91,7 @@ export const updateSupplier = async (supplierId: string, newName: string, addres
 };
 
 export const removeSupplier = async (supplierId: string) => {
-    const response = await axios.post(`${API_URL}/admin/supplier/removeSupplier`, {
+    const response = await axios.put(`${API_URL}/admin/supplier/removeSupplier`, {
         id: supplierId,
     });
     console.log(response.data);
