@@ -1,6 +1,5 @@
 import axios from 'axios';
 import API_URL from './LinkAPI';
-import { integer } from 'aws-sdk/clients/cloudfront';
 
 //Product
 export const getProducts = async () => {
@@ -72,7 +71,7 @@ export const getSupplier = async () => {
 };
 
 export const addNewSupplier = async ( name:any, address:any, phoneNumber:any) => {
-    const response = await axios.put(`${API_URL}/admin/supplier/addNewSupplier`, {
+    const response = await axios.post(`${API_URL}/admin/supplier/addNewSupplier`, {
         phoneNumber:phoneNumber,
         address: address,
         name: name,
@@ -80,12 +79,12 @@ export const addNewSupplier = async ( name:any, address:any, phoneNumber:any) =>
     return response.data;
 };
 
-export const updateSupplier = async (supplierId: string, newName: string, address:any, phoneNumber:any) => {
-    const response = await axios.put(`${API_URL}/admin/category/updateCategory`, {
+export const updateSupplier = async (supplierId: string, newName: string, address:string, phone:string) => {
+    const response = await axios.put(`${API_URL}/admin/supplier/updateSupplier`, {
         id: supplierId,
         newName: newName,
         address:address,
-        phoneNumber:phoneNumber,
+        phoneNumber:phone,
     });
     console.log(response.data);
     return response.data;

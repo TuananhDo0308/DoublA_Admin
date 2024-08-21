@@ -4,6 +4,8 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import SignIn from "./auth/signin/page";
 import { useAuth, AuthProvider } from "@/context/AuthContext";
 import { useEffect } from "react";
+import Chart from "@/components/Charts/page";
+
 export default function Home() {
   const { user, signOut } = useAuth();
 
@@ -24,7 +26,7 @@ const SignUp = () => {
 
   return (
     <DefaultLayout>
-      <button onClick={SignUp}>Sign out</button>
+      <Chart/>
     </DefaultLayout>
   );
 }

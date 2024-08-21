@@ -8,7 +8,7 @@ export const loginAdmin = async (credentials: any) => {
     return response.data;
 };;
 
-export const update = async (admin: FormData) => {
+export const updateAdmin = async (admin: FormData) => {
     console.log(admin);
     const response = await axios.put(`${API_URL}/users/updateProfile`, admin, {
         headers: {

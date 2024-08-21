@@ -66,7 +66,7 @@ const AddSupplierForm = ({
                 onChange={(e) =>
                   setNewSupplier({ ...newSupplier, str_tenncc: e.target.value })
                 }
-                className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
+                className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
                 required
               />
 

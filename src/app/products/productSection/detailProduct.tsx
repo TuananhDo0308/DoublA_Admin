@@ -75,7 +75,8 @@ export default function DetailProduct({
   };
 
   return (
-    <div className="fixed inset-0 z-50 ml-[290px] flex items-center justify-center bg-black bg-opacity-10">
+
+    <div className="fixed inset-0 z-99999 ml-[290px] flex items-center justify-center bg-black bg-opacity-10">
       <div className="relative w-full max-w-lg rounded-lg bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-3xl font-bold text-blue-800">Edit Product</h2>
 

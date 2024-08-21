@@ -1,4 +1,5 @@
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
@@ -7,6 +8,13 @@ import { IMG_URL } from "@/API/LinkAPI";
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const {user,signOut} = useAuth();
+  const router = useRouter();
+
+
+  const logOut = () => {
+    signOut();
+    router.push('/'); // Redirect to the root page
+  };
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -16,25 +24,38 @@ const DropdownUser = () => {
         href="#"
       >
         <span className="hidden text-right lg:block">
-          <span className="block text-sm font-medium text-black dark:text-white">
-            {user.str_ho_ten}
-          </span>
-          <span className="block text-xs">UX Designer</span>
+          {user ? (
+            <>
+              <span className="block text-sm font-medium text-black dark:text-white">
+                {user.str_ho_ten}
+              </span>
+              <span className="block text-xs">Administrator</span>
+            </>
+          ) : (
+            <span className="block text-sm font-medium text-black dark:text-white">
+              Loading...
+            </span>
+          )}
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <Image
-            width={112}
-            height={112}
-            src={`${IMG_URL}/${user.strimg}`}
-            style={{
-              width: "auto",
-              height: "auto",
-            }}
-            alt="User"
-          />
+          {user ? (
+            <Image
+              width={112}
+              height={112}
+              src={`${IMG_URL}/${user.strimg}`}
+              style={{
+                width: "auto",
+                height: "auto",
+              }}
+              alt="User"
+            />
+          ) : (
+            <span className="block text-sm font-medium text-black dark:text-white">
+              Loading...
+            </span>
+          )}
         </span>
-
         <svg
           className="hidden fill-current sm:block"
           width="12"
@@ -85,7 +106,7 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button onClick={signOut} className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button onClick={logOut} className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
             <svg
               className="fill-current"
               width="22"

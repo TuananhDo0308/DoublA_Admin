@@ -11,6 +11,7 @@ import CategorySection from "./categorySection/catergorySection";
 import SupplierSection from "./supplierSection/supplierSection";
 import AddSupplierForm from "./supplierSection/addSupplierSection";
 import { getSupplier } from "@/API/productAPI";
+import { getProcessingOrder } from "@/API/orderAPI";
 const ProductPage = () => {
     const { user } = useAuth();
     const [products, setProducts] = useState<any[]>([]);
@@ -23,16 +24,21 @@ const ProductPage = () => {
     const addSupplier = (newSupplier: any) => {
       setSuppliers([...suppliers, newSupplier]);
     };
+    
     useEffect(() => {
       fetchCategories();
       fetchProducts();
+
       fetchSuppliers();
     }, []);
+
     const fetchSuppliers = async () => {
       try {
         const data = await getSupplier();
+        const data2= await getProcessingOrder();
+
         setSuppliers(data.listSup);
-        console.log("sup:",data.listSup);
+        console.log("sup:",data2);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -91,8 +97,8 @@ const ProductPage = () => {
           )}
         {activeSection === "suppliers" && (
           <div>
-        <SupplierSection suppliers={suppliers}  setSuppliers={setSuppliers}/>
-          <AddSupplierForm addSupplier={addSupplier}/>
+            <AddSupplierForm addSupplier={addSupplier}/>
+            <SupplierSection suppliers={suppliers}  setSuppliers={setSuppliers}/>
         </div>
         )}
       </DefaultLayout>
