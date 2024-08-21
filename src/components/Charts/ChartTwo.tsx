@@ -3,7 +3,7 @@
 import { ApexOptions } from "apexcharts";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { getRevenueProducts } from "@/API/productAPI";
+import { getRevenueProducts, getCategories } from "@/API/productAPI";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -17,10 +17,10 @@ interface ChartTwoState {
 }
 
 const ChartTwo: React.FC = () => {
-
   const [selectedMonth, setSelectedMonth] = useState<string>("0");
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [categories, setCategories] = useState<any[]>([]); // State to hold categories
   const [products, setProducts] = useState<string[]>([]);
   const [series, setSeries] = useState<any[]>([
     {
@@ -28,6 +28,20 @@ const ChartTwo: React.FC = () => {
       data: [],
     },
   ]);
+
+  // Fetch categories when the component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        setCategories([{ str_malh: "All", str_tenlh: "All Categories" }, ...response.list]); // Add "All" option
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const fetchData = async (categoryId: string, year: string, month: string) => {
     try {
@@ -64,6 +78,7 @@ const ChartTwo: React.FC = () => {
     // Gọi API để lấy dữ liệu của tháng và năm được chọn
     fetchData(selectedCategory, year, selectedMonth);
   };
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const category = e.target.value;
     setSelectedCategory(category);
@@ -84,7 +99,7 @@ const ChartTwo: React.FC = () => {
         enabled: false,
       },
     },
-  
+
     responsive: [
       {
         breakpoint: 1536,
@@ -110,7 +125,7 @@ const ChartTwo: React.FC = () => {
     dataLabels: {
       enabled: false,
     },
-  
+
     xaxis: {
       categories: products,
     },
@@ -120,7 +135,7 @@ const ChartTwo: React.FC = () => {
       fontFamily: "Satoshi",
       fontWeight: 500,
       fontSize: "14px",
-  
+
       markers: {
         radius: 99,
       },
@@ -147,12 +162,11 @@ const ChartTwo: React.FC = () => {
             onChange={handleCategoryChange}
             className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
           >
-            <option value="All">All Categories</option>
-            {/* {categories.map(category => (
-              <option key={category.id} value={category.name}>
-                {category.name}
+            {categories.map(category => (
+              <option key={category.str_malh} value={category.str_malh}>
+                {category.str_tenlh}
               </option>
-            ))} */}
+            ))}
           </select>
         </div>
 
@@ -164,7 +178,6 @@ const ChartTwo: React.FC = () => {
             onChange={handleYearChange}
             className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 text-sm font-medium outline-none"
           >
-            {/* Render các năm trong dropdown, bạn có thể thêm hoặc giảm số năm tùy ý */}
             <option value="2024">2024</option>
             <option value="2023">2023</option>
             <option value="2022">2022</option>
