@@ -5,9 +5,10 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
-import OrderDetailModal from "./detailOrder";// Import the OrderDetailModal component
+import OrderDetailModal from "./detailOrder"; // Import the OrderDetailModal component
 import { completeOrder } from "@/API/orderAPI";
-import {getCompletedOrders}from "@/API/orderAPI";
+import { getCompletedOrders } from "@/API/orderAPI";
+
 interface Order {
   str_mahd: string;
   str_ho_ten: string;
@@ -25,7 +26,7 @@ const OrderTable = () => {
       try {
         const orderData = await getProcessingOrder();
         const data = await getCompletedOrders();
-        console.log(data)
+        console.log(data);
         setOrders(orderData.orders);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -43,7 +44,7 @@ const OrderTable = () => {
     try {
       await completeOrder(orderId);
       // Optionally, you can refresh the order list after completing the order
-      const updatedOrders = orders.filter(order => order.str_mahd !== orderId);
+      const updatedOrders = orders.filter((order) => order.str_mahd !== orderId);
       setOrders(updatedOrders);
       console.log(`Order ${orderId} marked as completed.`);
       setShowActions(null);
@@ -52,7 +53,6 @@ const OrderTable = () => {
       alert("Failed to complete the order. Please try again.");
     }
   };
-  
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -62,7 +62,7 @@ const OrderTable = () => {
         </h4>
       </div>
 
-      <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Order ID</p>
         </div>
@@ -76,13 +76,16 @@ const OrderTable = () => {
           <p className="font-medium">Total Amount</p>
         </div>
         <div className="col-span-1 flex items-center">
+          <p className="font-medium">Status</p>
+        </div>
+        <div className="col-span-1 flex items-center">
           <p className="font-medium">Actions</p>
         </div>
       </div>
 
       {orders.map((order, index) => (
         <div
-          className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
+          className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
           key={index}
         >
           <div className="col-span-1 flex items-center">
@@ -99,13 +102,13 @@ const OrderTable = () => {
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black dark:text-white">${order.d_tong}</p>
           </div>
-
+          <div className="col-span-1 flex items-center">
+            <p className="text-sm text-black dark:text-white">Processing</p> {/* Default Process */}
+          </div>
           <div className="relative col-span-1 flex items-center">
             <IconButton
               aria-label="actions"
-              onClick={() =>
-                setShowActions(showActions === index ? null : index)
-              }
+              onClick={() => setShowActions(showActions === index ? null : index)}
             >
               <MoreVertIcon />
             </IconButton>

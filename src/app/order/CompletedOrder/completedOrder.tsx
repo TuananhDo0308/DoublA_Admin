@@ -43,7 +43,7 @@ const CompletedOrderTable = () => {
         </h4>
       </div>
 
-      <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
+      <div className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5">
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Order ID</p>
         </div>
@@ -57,13 +57,16 @@ const CompletedOrderTable = () => {
           <p className="font-medium">Total Amount</p>
         </div>
         <div className="col-span-1 flex items-center">
+          <p className="font-medium">Status</p>
+        </div>
+        <div className="col-span-1 flex items-center">
           <p className="font-medium">Actions</p>
         </div>
       </div>
 
       {orders.map((order, index) => (
         <div
-          className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
+          className="grid grid-cols-7 border-t border-stroke px-4 py-4.5 dark:border-strokedark md:px-6 2xl:px-7.5"
           key={index}
         >
           <div className="col-span-1 flex items-center">
@@ -80,7 +83,9 @@ const CompletedOrderTable = () => {
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black dark:text-white">${order.d_tong}</p>
           </div>
-
+          <div className="col-span-1 flex items-center">
+            <p className="text-sm text-black dark:text-white">Completed</p> {/* Status column */}
+          </div>
           <div className="relative col-span-1 flex items-center">
             <IconButton
               aria-label="actions"

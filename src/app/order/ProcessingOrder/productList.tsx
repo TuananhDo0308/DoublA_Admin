@@ -18,24 +18,49 @@ interface ProductListProps {
   orderDetails: OrderDetail[];
 }
 
-const ProductList: React.FC<ProductListProps> = ({ orderDetails }) => {
+const ProductList: React.FC<ProductListProps> = ({ orderDetails }, status:string) => {
   return (
-    <div className="grid grid-cols-3 gap-4">
-      {orderDetails.map((detail, index) => (
-        <div key={index} className="flex items-center space-x-4">
-          <Image
-            src={`${IMG_URL}/${detail.Product.strimg}`}
-            alt={detail.Product.str_tensp}
-            width={80}
-            height={80}
-            className="rounded"
-          />
-          <div>
-            <p className="text-sm font-medium">{detail.Product.str_tensp}</p>
-            <p className="text-sm">Quantity: {detail.i_so_luong}</p>
-          </div>
-        </div>
-      ))}
+    <div className="overflow-auto max-h-96">
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th className="py-2 text-center">Image</th>
+            <th className="py-2 text-center">Product Name</th>
+            <th className="py-2 text-center">Quantity</th>
+            <th className="py-2 text-center">Price</th>
+            <th className="py-2 text-center">Total</th> {/* New Total Column */}
+          </tr>
+        </thead>
+        <tbody>
+          {orderDetails.map((detail, index) => (
+            <tr key={index} className="border-t text-center">
+              <td className="p-2">
+                <Image
+                  src={`${IMG_URL}/${detail.Product.strimg}`}
+                  alt={detail.Product.str_tensp}
+                  width={50}
+                  height={50}
+                  className="rounded"
+                />
+              </td>
+              <td className="p-2">
+                <p className="text-sm font-medium">{detail.Product.str_tensp}</p>
+              </td>
+              <td className="p-2">
+                <p className="text-sm">{detail.i_so_luong}</p>
+              </td>
+              <td className="p-2">
+                <p className="text-sm">${detail.Product.d_don_gia.toFixed(2)}</p>
+              </td>
+              <td className="p-2">
+                <p className="text-sm">
+                  ${ (detail.i_so_luong * detail.Product.d_don_gia).toFixed(2) }
+                </p>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
