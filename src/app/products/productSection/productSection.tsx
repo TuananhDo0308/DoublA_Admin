@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import InfoIcon from "@mui/icons-material/Info";
 import DetailProduct from "./detailProduct";
 import { updateProduct } from "@/API/productAPI";
-
+import ConfirmDialog from "@/components/ConfirmBox";
 const ProductTable = ({
   products,
   setProducts,
@@ -27,6 +27,7 @@ const ProductTable = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  
 
   const handleOpenDetail = (product: any) => {
     setSelectedProduct(product);
@@ -134,6 +135,7 @@ const ProductTable = ({
           <p className="font-medium">Actions</p>
         </div>
       </div>
+      
 
       {filteredProducts.map((product, index) => (
         <div
