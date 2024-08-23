@@ -6,7 +6,7 @@ interface AuthProviderProps {
 // Xác định kiểu cho context
 interface AuthContextType {
   user: any; // Bạn có thể tùy chỉnh kiểu cho user nếu có
-  signIn: (userData: any, cartData: any) => void;
+  signIn: (userData: any) => void;
   signOut: () => void;
   setUser: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -25,7 +25,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Load user và cart từ localStorage lần đầu tiên khi render
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const storedCart = localStorage.getItem("cart");
 
     if (storedUser) {
       setUser(JSON.parse(storedUser));

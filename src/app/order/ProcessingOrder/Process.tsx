@@ -1,13 +1,10 @@
-"use client";
 import React, { useState, useEffect } from "react";
-import { getProcessingOrder } from "@/API/orderAPI";
+import { getProcessingOrder, completeOrder, getCompletedOrders } from "@/API/orderAPI";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
-import OrderDetailModal from "./detailOrder"; // Import the OrderDetailModal component
-import { completeOrder } from "@/API/orderAPI";
-import { getCompletedOrders } from "@/API/orderAPI";
+import OrderDetailModal from "./detailOrder"; 
 
 interface Order {
   str_mahd: string;
@@ -43,7 +40,6 @@ const OrderTable = () => {
   const markOrderComplete = async (orderId: string) => {
     try {
       await completeOrder(orderId);
-      // Optionally, you can refresh the order list after completing the order
       const updatedOrders = orders.filter((order) => order.str_mahd !== orderId);
       setOrders(updatedOrders);
       console.log(`Order ${orderId} marked as completed.`);
@@ -134,10 +130,13 @@ const OrderTable = () => {
         </div>
       ))}
 
-      <OrderDetailModal 
-        orderId={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
-      />
+      {selectedOrder && (
+        <OrderDetailModal 
+          orderId={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onComplete={markOrderComplete} // Pass the complete order function to the modal
+        />
+      )}
     </div>
   );
 };

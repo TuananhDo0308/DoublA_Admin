@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import jsPDF from "jspdf";
+import "jspdf-autotable"; // Import the autoTable plugin
+
 import ProductList from "./productList";
 import { getOrderDetail } from "@/API/orderAPI"; // Import your API function
 
@@ -24,9 +27,10 @@ interface Order {
 interface OrderDetailModalProps {
   orderId: Order | null; // Use orderId instead of passing the whole order
   onClose: () => void;
+  onComplete: (orderId: string) => void; // New prop for completing the order
 }
 
-const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose }) => {
+const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose, onComplete }) => {
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
@@ -45,6 +49,36 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose })
     }
   };
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(20);
+    doc.text("Order Details", 14, 22);
+  
+    doc.setFontSize(12);
+    doc.text(`Order ID: ${order.str_mahd}`, 14, 32);
+    doc.text(`Customer Name: ${orderId.str_ho_ten}`, 14, 40);
+    doc.text(`Total Amount: $${order.d_tong}`, 14, 48);
+  
+    // Create the product table
+    doc.autoTable({
+      startY: 60, // Set starting Y position
+      head: [['Product Name', 'Quantity', 'Price', 'Total']],
+      body: order.OrderDetails.map(detail => [
+        detail.Product.str_tensp,
+        detail.i_so_luong,
+        `$${detail.Product.d_don_gia.toFixed(2)}`,
+        `$${(detail.i_so_luong * detail.Product.d_don_gia).toFixed(2)}`
+      ]),
+    });
+  
+    doc.save("order_details.pdf");
+  };
+  const submit =(mahd:string)=>{
+    onComplete(mahd);
+    onClose();
+  }
+
   if (!order || !orderId) return null;
 
   return (
@@ -56,12 +90,26 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose })
         <p className="mb-4"><strong>Total Amount:</strong> ${order.d_tong}</p>
         <h3 className="text-xl font-semibold mb-2">Products:</h3>
         <ProductList orderDetails={order.OrderDetails} />
-        <button
-          className="mt-6 rounded-full bg-primary px-4 py-2 text-white hover:bg-opacity-90"
-          onClick={onClose}
-        >
-          Close
-        </button>
+        <div className="mt-6 flex space-x-4">
+          <button
+            className="rounded-full bg-primary px-4 py-2 text-white hover:bg-opacity-90"
+            onClick={onClose}
+          >
+            Close
+          </button>
+          <button
+            className="rounded-full bg-blue-500 px-4 py-2 text-white hover:bg-opacity-90"
+            onClick={handleDownloadPDF}
+          >
+            Download PDF
+          </button>
+          <button
+            className="rounded-full bg-green-500 px-4 py-2 text-white hover:bg-opacity-90"
+            onClick={() => submit(order.str_mahd)} // Call the onComplete function with the order ID
+          >
+            Complete Order
+          </button>
+        </div>
       </div>
     </div>
   );
