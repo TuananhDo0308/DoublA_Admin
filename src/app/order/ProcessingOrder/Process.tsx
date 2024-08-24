@@ -135,6 +135,7 @@ const OrderTable = () => {
           orderId={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           onComplete={markOrderComplete} // Pass the complete order function to the modal
+          isCompleted={false}
         />
       )}
     </div>

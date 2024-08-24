@@ -28,9 +28,15 @@ interface OrderDetailModalProps {
   orderId: Order | null; // Use orderId instead of passing the whole order
   onClose: () => void;
   onComplete: (orderId: string) => void; // New prop for completing the order
+  isCompleted: boolean;
 }
 
-const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose, onComplete }) => {
+const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
+  orderId,
+  onClose,
+  onComplete,
+  isCompleted,
+}) => {
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
@@ -51,44 +57,50 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose, o
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(20);
-    doc.text("Order Details", 14, 22);
-  
+    doc.text(order.str_mahd, 14, 22);
+
     doc.setFontSize(12);
     doc.text(`Order ID: ${order.str_mahd}`, 14, 32);
     doc.text(`Customer Name: ${orderId.str_ho_ten}`, 14, 40);
     doc.text(`Total Amount: $${order.d_tong}`, 14, 48);
-  
+
     // Create the product table
     doc.autoTable({
       startY: 60, // Set starting Y position
-      head: [['Product Name', 'Quantity', 'Price', 'Total']],
-      body: order.OrderDetails.map(detail => [
+      head: [["Product Name", "Quantity", "Price", "Total"]],
+      body: order.OrderDetails.map((detail) => [
         detail.Product.str_tensp,
         detail.i_so_luong,
         `$${detail.Product.d_don_gia.toFixed(2)}`,
-        `$${(detail.i_so_luong * detail.Product.d_don_gia).toFixed(2)}`
+        `$${(detail.i_so_luong * detail.Product.d_don_gia).toFixed(2)}`,
       ]),
     });
-  
+
     doc.save("order_details.pdf");
   };
-  const submit =(mahd:string)=>{
+  const submit = (mahd: string) => {
     onComplete(mahd);
     onClose();
-  }
+  };
 
   if (!order || !orderId) return null;
 
   return (
-    <div className="fixed ml-[290px] inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4">Order Details</h2>
-        <p className="mb-4"><strong>Order ID:</strong> {order.str_mahd}</p>
-        <p className="mb-4"><strong>Customer Name:</strong> {orderId.str_ho_ten}</p>
-        <p className="mb-4"><strong>Total Amount:</strong> ${order.d_tong}</p>
-        <h3 className="text-xl font-semibold mb-2">Products:</h3>
+    <div className="fixed inset-0 z-50 ml-[290px] flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative w-full max-w-4xl rounded-lg bg-white p-6 shadow-lg">
+        <h2 className="mb-4 text-2xl font-bold">Order Details</h2>
+        <p className="mb-4">
+          <strong>Order ID:</strong> {order.str_mahd}
+        </p>
+        <p className="mb-4">
+          <strong>Customer Name:</strong> {orderId.str_ho_ten}
+        </p>
+        <p className="mb-4">
+          <strong>Total Amount:</strong> ${order.d_tong}
+        </p>
+        <h3 className="mb-2 text-xl font-semibold">Products:</h3>
         <ProductList orderDetails={order.OrderDetails} />
         <div className="mt-6 flex space-x-4">
           <button
@@ -103,12 +115,14 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ orderId, onClose, o
           >
             Download PDF
           </button>
-          <button
-            className="rounded-full bg-green-500 px-4 py-2 text-white hover:bg-opacity-90"
-            onClick={() => submit(order.str_mahd)} // Call the onComplete function with the order ID
-          >
-            Complete Order
-          </button>
+          {!isCompleted && (
+            <button
+              className="rounded-full bg-green-500 px-4 py-2 text-white hover:bg-opacity-90"
+              onClick={() => submit(order.str_mahd)} // Call the onComplete function with the order ID
+            >
+              Complete Order
+            </button>
+          )}
         </div>
       </div>
     </div>

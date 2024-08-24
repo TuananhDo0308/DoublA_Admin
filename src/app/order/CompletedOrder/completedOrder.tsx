@@ -114,6 +114,7 @@ const CompletedOrderTable = () => {
         <OrderDetailModal 
           orderId={selectedOrder} 
           onClose={() => setSelectedOrder(null)} 
+          isCompleted={true}
         />
       )}
     </div>

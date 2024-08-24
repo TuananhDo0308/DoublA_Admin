@@ -54,7 +54,7 @@ export default function DetailProduct({
       formData.append("productId", product.str_masp);
       formData.append("newName", data.str_tensp);
       formData.append("price", data.d_don_gia);
-      formData.append("quantity", data.i_so_luong);
+      formData.append("quantity", product.i_so_luong);
       formData.append("categoryId", data.str_malh);
       formData.append("supplierId", data.str_mancc);
       formData.append("description", data.txt_mo_ta);
@@ -130,18 +130,8 @@ export default function DetailProduct({
 
               {/* Quantity, Category, and Supplier */}
               <div className="flex justify-between mb-4">
-                <div className="w-1/3 pr-2">
-                  <label className="text-gray-700 block text-lg font-bold">
-                    Quantity
-                  </label>
-                  <input
-                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    type="number"
-                    {...methods.register("i_so_luong")}
-                  />
-                </div>
-
-                <div className="w-1/3 px-2">
+                
+                <div className="w-1/2 px-2">
                   <label className="text-gray-700 block text-lg font-bold">
                     Category
                   </label>
@@ -157,7 +147,7 @@ export default function DetailProduct({
                   </select>
                 </div>
 
-                <div className="w-1/3 pl-2">
+                <div className="w-1/2 pl-2">
                   <label className="text-gray-700 block text-lg font-bold">
                     Supplier
                   </label>

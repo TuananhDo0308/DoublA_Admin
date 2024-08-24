@@ -6,6 +6,13 @@ export const getProducts = async () => {
     const response = await axios.post(`${API_URL}/product`);
     return response.data;
 };
+export const getProductsBySupplier = async (supplierId:string) => {
+    const response = await axios.post(`${API_URL}/product/bySupplier`,{
+        supplierId: supplierId
+    });
+    return response.data;
+};
+
 export const addNewProduct = async (itemdata: FormData) => {
     const response = await axios.post(`${API_URL}/admin/product/addNewProduct`, itemdata, {
         headers: {
@@ -75,6 +82,19 @@ export const addNewSupplier = async ( name:any, address:any, phoneNumber:any) =>
         phoneNumber:phoneNumber,
         address: address,
         name: name,
+    });
+    return response.data;
+};
+
+interface Product {
+    productId: string;
+    quantity: number;
+  }
+export const newImport = async ( supplierId:string, totalPrice:any, products: Product[]) => {
+    const response = await axios.post(`${API_URL}/admin/import/newImport`, {
+        supplierId:supplierId, 
+        totalPrice:totalPrice, 
+        products:products
     });
     return response.data;
 };

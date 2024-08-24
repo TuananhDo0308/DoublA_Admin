@@ -36,7 +36,7 @@ const AddItemForm = ({
     const formData = new FormData();
     formData.append("productName", newProduct.str_tensp);
     formData.append("price", newProduct.d_don_gia.toString());
-    formData.append("quantity", newProduct.i_so_luong.toString());
+    formData.append("quantity", "0");
     formData.append("categoryId", newProduct.str_malh); // Send category ID instead of name
     formData.append("supplierId", newProduct.str_mancc);
     formData.append("description", newProduct.txt_mo_ta);
@@ -145,20 +145,7 @@ const AddItemForm = ({
                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 required
               />
-
-              <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
-                Quantity:{" "}
-              </label>
-              <input
-                type="number"
-                value={newProduct.i_so_luong}
-                placeholder="Enter quantity"
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, i_so_luong: +e.target.value })
-                }
-                className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
-                required
-              />
+          
 
               <label className="mb-1 mt-4 block text-sm font-medium text-black dark:text-white">
                 Category:{" "}

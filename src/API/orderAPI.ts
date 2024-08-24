@@ -35,3 +35,15 @@ export const getCompletedOrders = async () => {
     const response = await axios.post(`${API_URL}/admin/order/getCompletedOrders`);
     return response.data;
 };
+
+export const getImport = async () => {
+    const response = await axios.post(`${API_URL}/admin/import/allImport`);
+    return response.data;
+};
+export const importDetail = async (Id: string) => {
+    const response = await axios.post(`${API_URL}/admin/import/importDetail`,{
+        importId: Id
+    });
+    console.log(response.data)
+    return response.data;
+};
