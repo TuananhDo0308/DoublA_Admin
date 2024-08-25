@@ -22,8 +22,6 @@ const OrderTable = () => {
     async function fetchOrders() {
       try {
         const orderData = await getProcessingOrder();
-        const data = await getCompletedOrders();
-        console.log(data);
         setOrders(orderData.orders);
       } catch (error) {
         console.error("Error fetching orders:", error);

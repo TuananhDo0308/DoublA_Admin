@@ -176,7 +176,7 @@ const AddItemForm = ({
                 className=" rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
                 required
               >
-                <option value="">Select Category</option>
+                <option value="">Select Supplier</option>
                 {suppliers.map((supplier) => (
                   <option key={supplier.str_tenncc} value={supplier.str_mancc}>
                     {supplier.str_tenncc}

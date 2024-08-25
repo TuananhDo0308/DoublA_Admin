@@ -3,15 +3,12 @@ import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useAuth } from "@/context/AuthContext";
 import { getProducts, getCategories } from "@/API/productAPI";
-import Image from "next/image";
-import { IMG_URL } from "@/API/LinkAPI";
 import ProductSection from "@/app/products/productSection/productSection"
 import AddItemForm from "./productSection/addItemSection";
 import CategorySection from "./categorySection/catergorySection";
 import SupplierSection from "./supplierSection/supplierSection";
 import AddSupplierForm from "./supplierSection/addSupplierSection";
 import { getSupplier } from "@/API/productAPI";
-import { getProcessingOrder } from "@/API/orderAPI";
 const ProductPage = () => {
     const { user } = useAuth();
     const [products, setProducts] = useState<any[]>([]);
@@ -35,10 +32,7 @@ const ProductPage = () => {
     const fetchSuppliers = async () => {
       try {
         const data = await getSupplier();
-        const data2= await getProcessingOrder();
-
         setSuppliers(data.listSup);
-        console.log("sup:",data2);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }

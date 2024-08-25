@@ -31,9 +31,6 @@ const ChartThree: React.FC = () => {
       const formattedLabels = categoryLabels.map((label: string, index: number) => `${label}: ${percentageValues[index]}%`);
       setSeries(revenueValues);
       setLabels(formattedLabels);
-      console.log('Series:', series);
-      console.log('Labels:', labels);
-      console.log('Total Revenue:', response.totalRevenue);
     } catch (error) {
       console.error("Failed to fetch data", error);
     }

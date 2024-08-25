@@ -12,7 +12,6 @@ export const getProductsBySupplier = async (supplierId:string) => {
     });
     return response.data;
 };
-
 export const addNewProduct = async (itemdata: FormData) => {
     const response = await axios.post(`${API_URL}/admin/product/addNewProduct`, itemdata, {
         headers: {
@@ -24,13 +23,13 @@ export const addNewProduct = async (itemdata: FormData) => {
 
 export const deleteProduct = async (productId:any) => {
     console.log(productId);
-    const response = await axios.post(`${API_URL}/admin/product/removeProduct`,productId);
+    const response = await axios.put(`${API_URL}/admin/product/removeProduct`,productId);
     return response.data;
 };
 
 export const updateProduct = async (product: FormData) => {
     console.log(product);
-    const response = await axios.post(`${API_URL}/admin/product/updateProduct`, product, {
+    const response = await axios.put(`${API_URL}/admin/product/updateProduct`, product, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

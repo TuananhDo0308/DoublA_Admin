@@ -4,7 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"; // Material-UI Icons
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import { updateSupplier, removeSupplier } from "@/API/productAPI";
+import { removeSupplier } from "@/API/productAPI";
 import DetailSupplier from "./detailSupplier";
 
 const SupplierTable = ({
