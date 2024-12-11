@@ -1,102 +1,88 @@
-"use client";
-import React, { useEffect, useState } from "react";
+"use client"
+import React, { useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useAuth } from "@/context/AuthContext";
-import { getProducts, getCategories } from "@/API/productAPI";
-import ProductSection from "@/app/products/productSection/productSection"
+import { getProducts, getCategories, getSupplier } from "@/API/productAPI";
+import ProductSection from "@/app/products/productSection/productSection";
 import AddItemForm from "./productSection/addItemSection";
 import CategorySection from "./categorySection/catergorySection";
 import SupplierSection from "./supplierSection/supplierSection";
 import AddSupplierForm from "./supplierSection/addSupplierSection";
-import { getSupplier } from "@/API/productAPI";
-const ProductPage = () => {
-    const { user } = useAuth();
-    const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [activeSection, setActiveSection] = useState<string>("products");
-    const [suppliers, setSuppliers]= useState<any[]>([]);
-    const addItem = (newProduct: any) => {
-      setProducts([...products, newProduct]);
-    };
-    const addSupplier = (newSupplier: any) => {
-      setSuppliers([...suppliers, newSupplier]);
-    };
-    
-    useEffect(() => {
-      fetchCategories();
-      fetchProducts();
 
-      fetchSuppliers();
-    }, []);
+// This function will run on the server
+export default async function ProductPage() {
+  // Fetch data from API
+  const productsData = await getProducts();
+  const categoriesData = await getCategories();
+  const suppliersData = await getSupplier();
 
-    const fetchSuppliers = async () => {
-      try {
-        const data = await getSupplier();
-        setSuppliers(data.listSup);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };  
-    // Fetch Categories
-    const fetchCategories = async () => {
-      try {
-        const data = await getCategories();
-        setCategories(data.list);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };  
-    const fetchProducts = async () => {
-      try {
-        const data = await getProducts();
-        setProducts(data.list);  
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-  
-    return (
-      <DefaultLayout>
-        <div className="mb-4 flex gap-3">
-          <button 
-              className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-              onClick={() => setActiveSection("products")}
-          >
-            Product
-          </button>
-          <button 
-              className="inline-flex items-center justify-center rounded-full bg-meta-3 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-              onClick={() => setActiveSection("categories")}
-          >
-            Category
-          </button>
-          <button 
-              className="inline-flex items-center justify-center rounded-full bg-meta-6 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-              onClick={() => setActiveSection("suppliers")}
-          >
-            Supplier
-          </button>
-        </div>
-  
-        {activeSection === "products" && (
-          <div>
-            <AddItemForm addItem={addItem} categories={categories} suppliers={suppliers}/> {/* Pass categories here */}
-            <ProductSection products={products} setProducts={setProducts} categories={categories} suppliers={suppliers} />
-          </div>
-        )}
-        {activeSection === "categories" && (
-          <div>
-            <CategorySection categories={categories}  setCategories={setCategories}/>
-          </div>
-          )}
-        {activeSection === "suppliers" && (
-          <div>
-            <AddSupplierForm addSupplier={addSupplier}/>
-            <SupplierSection suppliers={suppliers}  setSuppliers={setSuppliers}/>
-        </div>
-        )}
-      </DefaultLayout>
-    );
+  const initialProducts = productsData.list || [];
+  const initialCategories = categoriesData.list || [];
+  const initialSuppliers = suppliersData.listSup || [];
+
+  return (
+    <ServerSideComponent
+      initialProducts={initialProducts}
+      initialCategories={initialCategories}
+      initialSuppliers={initialSuppliers}
+    />
+  );
+}
+
+// Separate client-side logic into a Client Component
+function ServerSideComponent({ initialProducts, initialCategories, initialSuppliers }: any) {
+  const [products, setProducts] = useState(initialProducts);
+  const [categories, setCategories] = useState(initialCategories);
+  const [suppliers, setSuppliers] = useState(initialSuppliers);
+  const [activeSection, setActiveSection] = useState<string>("products");
+
+  const addItem = (newProduct: any) => {
+    setProducts([...products, newProduct]);
   };
-  
-export default ProductPage;
+
+  const addSupplier = (newSupplier: any) => {
+    setSuppliers([...suppliers, newSupplier]);
+  };
+
+  return (
+    <DefaultLayout>
+      <div className="mb-4 flex gap-3">
+        <button
+          className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          onClick={() => setActiveSection("products")}
+        >
+          Product
+        </button>
+        <button
+          className="inline-flex items-center justify-center rounded-full bg-meta-3 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          onClick={() => setActiveSection("categories")}
+        >
+          Category
+        </button>
+        <button
+          className="inline-flex items-center justify-center rounded-full bg-meta-6 px-5 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          onClick={() => setActiveSection("suppliers")}
+        >
+          Supplier
+        </button>
+      </div>
+
+      {activeSection === "products" && (
+        <div>
+          <AddItemForm addItem={addItem} categories={categories} suppliers={suppliers} />
+          <ProductSection products={products} setProducts={setProducts} categories={categories} suppliers={suppliers} />
+        </div>
+      )}
+      {activeSection === "categories" && (
+        <div>
+          <CategorySection categories={categories} setCategories={setCategories} />
+        </div>
+      )}
+      {activeSection === "suppliers" && (
+        <div>
+          <AddSupplierForm addSupplier={addSupplier} />
+          <SupplierSection suppliers={suppliers} setSuppliers={setSuppliers} />
+        </div>
+      )}
+    </DefaultLayout>
+  );
+}
